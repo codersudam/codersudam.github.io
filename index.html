@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI Design Inspiration Catalog</title>
+    <style>
+        /* Light Theme Base & Typography */
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --accent: #3b82f6;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Navigation */
+        header {
+            background-color: var(--card-bg);
+            padding: 20px 5%;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            margin-left: 24px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 5%;
+        }
+
+        /* About Section */
+        .about-section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 48px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .about-section h1 {
+            font-size: 2rem;
+            margin-bottom: 16px;
+            color: var(--text-main);
+        }
+
+        .about-section p {
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+        }
+
+        /* The Magic CSS Grid for Future Videos */
+        .video-grid {
+            display: grid;
+            /* This single line makes it perfectly responsive */
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 32px;
+        }
+
+        /* Individual Video Card */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-thumbnail {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background-color: #e2e8f0;
+            background-image: url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80'); /* Placeholder image */
+            background-size: cover;
+            background-position: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .card-content {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .card-description {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+            flex-grow: 1;
+        }
+
+        .card-btn {
+            display: inline-block;
+            text-align: center;
+            padding: 12px 24px;
+            background-color: var(--bg-color);
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+        }
+
+        .card-btn:hover {
+            background-color: var(--accent);
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">UI/UX Studio</div>
+        <nav class="nav-links">
+            <a href="#about">About</a>
+            <a href="#projects">Projects</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        
+        <section id="about" class="about-section">
+            <h1>Hi, I'm Sudam.</h1>
+            <p>I am an instrumentation and control engineer who loves exploring modern UI design. This space is where I bridge the gap between structured logic and beautiful, clean web interfaces.</p>
+        </section>
+
+        <section id="projects">
+            <h2 style="margin-bottom: 24px; font-size: 1.5rem;">Latest UI Components</h2>
+            
+            <div class="video-grid">
+                
+                <div class="card">
+                    <div class="card-thumbnail"></div>
+                    <div class="card-content">
+                        <h3 class="card-title">Modern Button Hover</h3>
+                        <p class="card-description">A sleek, animated button component using CSS gradients and box-shadows.</p>
+                        <a href="button-project.html" class="card-btn">View Code & Video</a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-thumbnail" style="background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=600&q=80');"></div>
+                    <div class="card-content">
+                        <h3 class="card-title">Glassmorphism Card</h3>
+                        <p class="card-description">Designing a frosted glass effect using backdrop-filter for clean interfaces.</p>
+                        <a href="#" class="card-btn">View Code & Video</a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-thumbnail" style="background-image: url('https://images.unsplash.com/photo-1507721999472-8ed4421c4af2?auto=format&fit=crop&w=600&q=80');"></div>
+                    <div class="card-content">
+                        <h3 class="card-title">Responsive Navbar</h3>
+                        <p class="card-description">A fully responsive navigation menu that collapses gracefully on mobile devices.</p>
+                        <a href="#" class="card-btn">View Code & Video</a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+</body>
+</html>
