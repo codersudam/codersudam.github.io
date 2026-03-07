@@ -3,592 +3,539 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Light Theme Fluid Canvas UI | Sudam's Code Cafe</title>
+    <title>Sudam's Code Cafe | Interactive UI Studio</title>
+    <meta name="description" content="Brewing high-fidelity HTML, CSS, and Vanilla JS components.">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-        /* Import your local TTF file */
-        @font-face {
-            font-family: 'JetBrains Mono Custom';
-            src: url('./fonts/JetBrainsMono.ttf') format('truetype');
-            font-weight: 400; /* Adjust this if your ttf is a specific weight like bold */
-            font-style: normal;
-            font-display: swap; /* Ensures text shows immediately while the font loads */
-        }
         /* Tech-Blue Cafe Variables */
         :root {
-            --bg-base: #f0f4f8; 
-            --glass-panel: rgba(255, 255, 255, 0.65);
-            --glass-header: rgba(255, 255, 255, 0.85);
+            --bg-base: #f0f4f8; /* Crisp, cool light theme background */
+            --glass-panel: rgba(255, 255, 255, 0.45);
+            --glass-hover: rgba(255, 255, 255, 0.75);
             --text-main: #0f172a; 
             --text-muted: #475569; 
-            --accent-main: #3b82f6; 
-            --accent-hover: #2563eb;
-            --border-glass: rgba(255, 255, 255, 0.8);
-            --shadow-glass: 0 10px 40px -10px rgba(31, 38, 135, 0.08);
-            --code-bg: #0f172a; /* Deep Slate IDE Background */
+            --accent-main: #3b82f6; /* Techy Royal Blue */
+            --accent-glow: rgba(59, 130, 246, 0.4);
+            --border-glass: rgba(255, 255, 255, 0.7);
+            --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+            --transition-smooth: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
-        
-        body { 
-            background-color: var(--bg-base); 
-            color: var(--text-main); 
-            padding-bottom: 60px;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Ambient Background (Subtle) */
-        .ambient-bg {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
-            background: radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.08), transparent 50%),
-                        radial-gradient(circle at 85% 30%, rgba(147, 197, 253, 0.08), transparent 50%);
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ---------------------------------
+           ORBITAL SWARM PHYSICS CANVAS
+           --------------------------------- */
+        #physics-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
         }
 
         /* Glass Navigation Bar */
         header {
-            position: sticky; top: 20px; z-index: 100;
-            background: var(--glass-panel); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border-glass); border-radius: 100px;
-            padding: 16px 32px; margin: 0 auto 40px; max-width: 1400px; width: 92%;
-            box-shadow: var(--shadow-glass); display: flex; justify-content: space-between; align-items: center;
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+            background: var(--glass-panel);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: 100px;
+            padding: 16px 32px;
+            margin: 0 auto;
+            max-width: 1200px;
+            width: 92%;
+            box-shadow: var(--shadow-glass);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .brand-logo {
-            font-size: 1.2rem; font-weight: 800; color: var(--text-main); text-decoration: none;
-            display: flex; align-items: center; gap: 12px;
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: -0.5px;
         }
 
         .brand-icon {
-            background: var(--accent-main); color: white; width: 32px; height: 32px;
-            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            background: var(--accent-main);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            box-shadow: 0 4px 12px var(--accent-glow);
         }
 
-        .back-link {
-            font-size: 0.9rem; font-weight: 600; color: var(--text-muted); text-decoration: none;
-            display: flex; align-items: center; gap: 6px; transition: color 0.2s;
-        }
-        .back-link:hover { color: var(--accent-main); }
-
-        /* Main Layout Grid */
-        .layout-container {
-            max-width: 1500px; margin: 0 auto; padding: 0 4%;
-            display: grid; grid-template-columns: 1fr 1.2fr; gap: 32px; align-items: start;
+        .nav-status {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        /* Left Column: Video & Info */
-        .video-section { display: flex; flex-direction: column; gap: 24px; }
-        
-        .video-wrapper {
-            width: 100%; aspect-ratio: 16 / 9; border-radius: 20px;
-            overflow: hidden; box-shadow: var(--shadow-glass);
-            border: 1px solid var(--border-glass); background: #000;
-        }
-        .video-wrapper iframe { width: 100%; height: 100%; border: none; }
-
-        .project-details {
-            background: var(--glass-panel); backdrop-filter: blur(16px);
-            border: 1px solid var(--border-glass); border-radius: 20px; padding: 32px;
-        }
-        .project-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.5px; }
-        .project-desc { color: var(--text-muted); font-size: 1rem; line-height: 1.6; }
-
-        /* Right Column: The Unified Workspace */
-        .workspace-window {
-            background: var(--glass-panel); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-            border: 1px solid var(--border-glass); border-radius: 24px;
-            box-shadow: var(--shadow-glass); overflow: hidden;
-            display: flex; flex-direction: column; height: calc(100vh - 120px); min-height: 600px;
+        .pulse-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background-color: var(--accent-main);
+            box-shadow: 0 0 0 0 var(--accent-glow);
+            animation: pulse 2s infinite;
         }
 
-        /* Workspace Header with Toggles */
-        .window-header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 16px 24px; background: var(--glass-header); border-bottom: 1px solid var(--border-glass);
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
         }
 
-        .window-title { font-weight: 700; font-size: 1rem; color: var(--text-main); display: flex; align-items: center; gap: 8px;}
-        .window-title::before { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981; }
-
-        .window-controls { display: flex; align-items: center; gap: 16px; }
-
-        /* The Toggle Switch */
-        .toggle-group {
-            display: flex; background: rgba(0,0,0,0.05); border-radius: 10px; padding: 4px;
-        }
-        .toggle-btn {
-            background: transparent; border: none; padding: 8px 16px; border-radius: 8px;
-            font-size: 0.85rem; font-weight: 700; color: var(--text-muted); cursor: pointer; transition: all 0.3s;
-        }
-        .toggle-btn.active { background: #ffffff; color: var(--accent-main); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-
-        /* Action Buttons (Share, Fullscreen) */
-        .action-group { display: flex; gap: 8px; border-left: 1px solid rgba(0,0,0,0.1); padding-left: 16px;}
-        .action-btn {
-            background: #ffffff; border: 1px solid var(--border-glass); border-radius: 10px;
-            width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; color: var(--text-muted); transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-        }
-        .action-btn:hover { color: var(--accent-main); border-color: var(--accent-main); transform: translateY(-2px); }
-
-        /* Workspace Content Area */
-        .window-content { flex-grow: 1; position: relative; background: #ffffff; }
-        
-        .view-panel {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: none; overflow: hidden;
-        }
-        .view-panel.active { display: block; }
-
-        /* Preview Iframe */
-        #preview-iframe { width: 100%; height: 100%; border: none; background: #ffffff; display: block;}
-
-        /* --- Prism.js & JetBrains Mono Overrides --- */
-        #code { 
-            background: var(--code-bg); 
-            overflow-y: auto; 
-            overflow-x: hidden; /* Prism handles internal x-scroll */
-        }
-        
-        /* Force Prism to use our specific fonts and background */
-        pre[class*="language-"], code[class*="language-"] {
-            font-family: 'JetBrains Mono', monospace !important;
-            font-size: 0.9rem !important;
-            line-height: 1.6 !important;
-            background: var(--code-bg) !important;
-            text-shadow: none !important; /* Removes the default Prism text shadow for a cleaner, modern look */
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 0 5%;
+            width: 100%;
+            flex-grow: 1;
         }
 
-        pre[class*="language-"] {
-            margin: 0 !important;
-            padding: 32px !important;
-            border-radius: 0 !important;
-            min-height: 100%;
+        .section-header {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 24px;
+            letter-spacing: -1px;
+            color: var(--text-main);
         }
 
-        /* Custom Scrollbar for the Code Editor */
-        #code::-webkit-scrollbar { width: 10px; height: 10px; }
-        #code::-webkit-scrollbar-track { background: var(--code-bg); }
-        #code::-webkit-scrollbar-thumb { background: #334155; border-radius: 5px; }
-        #code::-webkit-scrollbar-thumb:hover { background: #475569; }
+        /* 1. Freshly Brewed (Featured Glass Card) */
+        .featured-card {
+            background: var(--glass-panel);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: 24px;
+            border: 1px solid var(--border-glass);
+            border-top: 1px solid rgba(255, 255, 255, 1);
+            border-left: 1px solid rgba(255, 255, 255, 1);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            box-shadow: var(--shadow-glass);
+            margin-bottom: 60px;
+            transition: var(--transition-smooth);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .featured-card:hover {
+            transform: translateY(-4px);
+            background: var(--glass-hover);
+            box-shadow: 0 20px 40px -10px rgba(59, 130, 246, 0.15);
+        }
+
+        .featured-media {
+            width: 100%;
+            height: 100%;
+            min-height: 400px;
+            position: relative;
+            padding: 24px;
+        }
+
+        .featured-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        .featured-content {
+            padding: 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .badge-blue {
+            align-self: flex-start;
+            background: rgba(59, 130, 246, 0.1);
+            color: #2563eb;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 6px 14px;
+            border-radius: 50px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .featured-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 16px;
+            letter-spacing: -1px;
+        }
+
+        .featured-desc {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 32px;
+        }
+
+        .btn-primary {
+            align-self: flex-start;
+            background: var(--text-main);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .featured-card:hover .btn-primary {
+            background: var(--accent-main);
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
+
+        /* 2. Menu Grid (Glass Cards) */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 32px;
+        }
+
+        .menu-item {
+            background: var(--glass-panel);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glass);
+            border-top: 1px solid rgba(255, 255, 255, 1);
+            border-left: 1px solid rgba(255, 255, 255, 1);
+            border-radius: 20px;
+            padding: 20px;
+            transition: var(--transition-smooth);
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: var(--shadow-glass);
+        }
+
+        .menu-item:hover {
+            transform: translateY(-6px);
+            background: var(--glass-hover);
+            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.12);
+        }
+
+        .menu-media {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .menu-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .menu-item:hover .menu-media img {
+            transform: scale(1.05);
+        }
+
+        .menu-tags {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .tag {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: rgba(255,255,255,0.9);
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .menu-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .menu-desc {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        footer {
+            text-align: center;
+            padding: 60px 5% 40px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-top: 60px;
+        }
 
         /* Responsive Breakpoints */
-        @media (max-width: 1100px) {
-            .layout-container { grid-template-columns: 1fr; }
-            .workspace-window { height: 700px; }
+        @media (max-width: 968px) {
+            .featured-card { grid-template-columns: 1fr; }
+            .featured-media { min-height: 250px; padding: 20px 20px 0 20px; }
+            .featured-content { padding: 32px; }
         }
-        @media (max-width: 600px) {
-            header { padding: 12px 20px; }
-            .window-header { flex-direction: column; gap: 16px; align-items: flex-start; }
-            .window-controls { width: 100%; justify-content: space-between; }
-            .action-group { border-left: none; padding-left: 0; }
+
+        @media (max-width: 640px) {
+            header { width: 95%; padding: 12px 20px; top: 12px; }
+            .menu-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <div class="ambient-bg"></div>
+    <canvas id="physics-canvas"></canvas>
 
     <header>
-        <a href="index.html" class="brand-logo">
+        <a href="#" class="brand-logo">
             <div class="brand-icon">&lt;/&gt;</div>
             Sudam's Code Cafe
         </a>
-        <a href="index.html" class="back-link">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-            Back to Menu
-        </a>
+        <div class="nav-status">
+            <div class="pulse-dot"></div>
+            <span>Studio Live</span>
+        </div>
     </header>
 
-    <div class="layout-container">
+    <main class="container">
         
-        <div class="video-section">
-            <div class="video-wrapper">
-                <iframe src="https://www.youtube.com/embed/KrHkzWwpS2Q" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <h2 class="section-header">Freshly Brewed</h2>
+        
+        <a href="liquid-physics-hover.html" class="featured-card">
+            <div class="featured-media">
+                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80" alt="Featured Component">
             </div>
+            <div class="featured-content">
+                <span class="badge-blue">New Upload</span>
+                <h3 class="featured-title">Liquid Physics Hover Effects</h3>
+                <p class="featured-desc">An interactive interface reacting to cursor movement with fluid-like properties and advanced mathematical transitions. Built purely with Vanilla JS.</p>
+                <div class="btn-primary">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                    Source & Preview
+                </div>
+            </div>
+        </a>
+
+        <h2 class="section-header">The Menu</h2>
+        
+        <div class="menu-grid" id="project-grid">
             
-            <div class="project-details">
-                <h1 class="project-title">Light Theme Fluid Canvas UI</h1>
-                <p class="project-desc">Experience a custom built physics engine. Swipe your cursor to create hyper-realistic ripples in this bright, modern layout built entirely with HTML, CSS, and Vanilla JS.</p>
-            </div>
+            <a href="advanced-glassmorphism.html" class="menu-item">
+                <div class="menu-media">
+                    <img src="https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&w=800&q=80" alt="Glassmorphism">
+                </div>
+                <div class="menu-tags">
+                    <span class="tag">HTML</span>
+                    <span class="tag">CSS</span>
+                </div>
+                <h3 class="menu-title">Advanced Glassmorphism</h3>
+                <p class="menu-desc">Leveraging modern backdrop-filters and subtle nested shadows to create depth in a light theme.</p>
+            </a>
+
+            <a href="nav-micro-interactions.html" class="menu-item">
+                <div class="menu-media">
+                    <img src="https://images.unsplash.com/photo-1618761714954-0b8cd0026356?auto=format&fit=crop&w=800&q=80" alt="Interactions">
+                </div>
+                <div class="menu-tags">
+                    <span class="tag">UI/UX</span>
+                    <span class="tag">JS</span>
+                </div>
+                <h3 class="menu-title">Nav State Interactions</h3>
+                <p class="menu-desc">Building smooth, accessible navigation menus with fluid state transitions that respond instantly.</p>
+            </a>
+
+            <a href="minimal-cards.html" class="menu-item">
+                <div class="menu-media">
+                    <img src="https://images.unsplash.com/photo-1507721999472-8ed4421c4af2?auto=format&fit=crop&w=800&q=80" alt="Cards">
+                </div>
+                <div class="menu-tags">
+                    <span class="tag">Design</span>
+                    <span class="tag">CSS</span>
+                </div>
+                <h3 class="menu-title">Minimalist Data Cards</h3>
+                <p class="menu-desc">Clean, simple UI designs for displaying complex JSON data structures efficiently.</p>
+            </a>
+
         </div>
+    </main>
 
-        <div class="workspace-window" id="workspace">
-            
-            <div class="window-header">
-                <div class="window-title">Component Output</div>
-                
-                <div class="window-controls">
-                    <div class="toggle-group">
-                        <button class="toggle-btn active" onclick="switchView('preview')">Preview</button>
-                        <button class="toggle-btn" onclick="switchView('code')">Code</button>
-                    </div>
-                    
-                    <div class="action-group">
-                        <button class="action-btn" onclick="sharePage()" title="Share Component">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-                        </button>
-                        <button class="action-btn" onclick="toggleFullScreen()" title="Full Screen Workspace">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="window-content">
-                
-                <div id="preview" class="view-panel active">
-                    <iframe id="preview-iframe"></iframe>
-                </div>
-
-                <div id="code" class="view-panel">
-<pre><code class="language-html" id="raw-code-block">&lt;!DOCTYPE html&gt;
-&lt;html lang="en"&gt;
-&lt;head&gt;
-  &lt;meta charset="UTF-8"&gt;
-  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-  &lt;title&gt;Light Theme Fluid Canvas UI&lt;/title&gt;
-  &lt;style&gt;
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-
-    /* Perfectly aligned and fully responsive light layout */
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: #f8fafc; /* Soft, light slate background */
-      background-image: radial-gradient(circle at 50% 0%, #ffffff 0%, #f1f5f9 100%);
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      padding: 24px;
-      box-sizing: border-box;
-      overflow: hidden;
-    }
-
-    #liquidCanvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      pointer-events: auto;
-    }
-
-    /* Pristine Frosted Glass Card */
-    .glass-card {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      max-width: 420px;
-      padding: 40px;
-      background: rgba(255, 255, 255, 0.6);
-      border-radius: 32px;
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      box-shadow: 
-        0 20px 40px rgba(14, 165, 233, 0.1),
-        0 4px 6px rgba(0, 0, 0, 0.02),
-        inset 0 2px 10px rgba(255, 255, 255, 1);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      pointer-events: none; /* Allows cursor to interact with the water behind it */
-      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-
-    .icon-container {
-      width: 72px;
-      height: 72px;
-      background: linear-gradient(135deg, #38bdf8, #0ea5e9);
-      border-radius: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 24px;
-      box-shadow: 0 10px 25px rgba(14, 165, 233, 0.3);
-      transform: rotate(-5deg);
-    }
-
-    .icon-container svg {
-      width: 36px;
-      height: 36px;
-      fill: none;
-      stroke: #ffffff;
-      stroke-width: 2.5;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-
-    .title {
-      color: #0f172a; /* Dark slate for high contrast */
-      font-size: 2.2rem;
-      font-weight: 800;
-      margin: 0 0 12px 0;
-      letter-spacing: -0.5px;
-    }
-
-    .subtitle {
-      color: #64748b; /* Medium slate for secondary text */
-      font-size: 1.05rem;
-      line-height: 1.6;
-      font-weight: 400;
-      margin: 0 0 30px 0;
-    }
-
-    .action-badge {
-      padding: 10px 20px;
-      background: #ffffff;
-      border-radius: 100px;
-      color: #0ea5e9;
-      font-weight: 600;
-      font-size: 0.9rem;
-      letter-spacing: 0.5px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-      border: 1px solid rgba(14, 165, 233, 0.1);
-    }
-
-  &lt;/style&gt;
-&lt;/head&gt;
-&lt;body&gt;
-
-  &lt;canvas id="liquidCanvas"&gt;&lt;/canvas&gt;
-
-  &lt;div class="glass-card"&gt;
-    &lt;div class="icon-container"&gt;
-      &lt;svg viewBox="0 0 24 24"&gt;
-        &lt;path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"&gt;&lt;/path&gt;
-      &lt;/svg&gt;
-    &lt;/div&gt;
-    &lt;h1 class="title"&gt;Crystal Fluid&lt;/h1&gt;
-    &lt;p class="subtitle"&gt;Experience the upgraded physics engine. Swipe your cursor to create hyper-realistic ripples in this bright, modern layout.&lt;/p&gt;
-    &lt;div class="action-badge"&gt;Interactive Surface&lt;/div&gt;
-  &lt;/div&gt;
-
-  &lt;script&gt;
-    const canvas = document.getElementById('liquidCanvas');
-    const ctx = canvas.getContext('2d');
-
-    let width, height;
-    let springs = [];
-    const spacing = 8; // Slightly wider spacing for smoother, larger waves
-
-    // Upgraded Spring Physics Constants for a "heavier" water feel
-    const tension = 0.050;
-    const dampening = 0.010;
-    const spread = 0.3;
-
-    let targetHeight;
-    let mouse = { x: 0, y: 0, dy: 0, prevY: 0 };
-
-    class Spring {
-      constructor(x, y) {
-        this.x = x;
-        this.targetHeight = y;
-        this.height = y;
-        this.velocity = 0;
-      }
-
-      update() {
-        let displacement = this.targetHeight - this.height;
-        this.velocity += tension * displacement - this.velocity * dampening;
-        this.height += this.velocity;
-      }
-    }
-
-    function initFluid() {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-      
-      // Set water level lower for the light theme aesthetic
-      targetHeight = height * 0.65; 
-      
-      springs = [];
-      const numSprings = Math.ceil(width / spacing) + 1;
-      
-      for (let i = 0; i < numSprings; i++) {
-        springs.push(new Spring(i * spacing, targetHeight));
-      }
-    }
-
-    function drawFluid() {
-      ctx.clearRect(0, 0, width, height);
-
-      // --- Interaction Logic ---
-      let index = Math.floor(mouse.x / spacing);
-      if (index >= 0 && index < springs.length) {
-        let distance = Math.abs(mouse.y - springs[index].height);
-        // Push water if mouse crosses the surface
-        if (distance < 60) {
-          springs[index].velocity += mouse.dy * 1;
-        }
-      }
-      mouse.dy *= 0.8; // Decay velocity
-
-      // --- Physics Update ---
-      for (let i = 0; i < springs.length; i++) {
-        springs[i].update();
-      }
-
-      // Propagate the wave
-      let leftDeltas = new Array(springs.length).fill(0);
-      let rightDeltas = new Array(springs.length).fill(0);
-
-      for (let j = 0; j < 8; j++) {
-        for (let i = 0; i < springs.length; i++) {
-          if (i > 0) {
-            leftDeltas[i] = spread * (springs[i].height - springs[i - 1].height);
-            springs[i - 1].velocity += leftDeltas[i];
-          }
-          if (i < springs.length - 1) {
-            rightDeltas[i] = spread * (springs[i].height - springs[i + 1].height);
-            springs[i + 1].velocity += rightDeltas[i];
-          }
-        }
-        for (let i = 0; i < springs.length; i++) {
-          if (i > 0) springs[i - 1].height += leftDeltas[i];
-          if (i < springs.length - 1) springs[i + 1].height += rightDeltas[i];
-        }
-      }
-
-      // --- Rendering the Light Theme Liquid ---
-      
-      // Beautiful crystal blue gradient
-      let gradient = ctx.createLinearGradient(0, targetHeight - 100, 0, height);
-      gradient.addColorStop(0, 'rgba(56, 189, 248, 0.4)'); // Light sky blue
-      gradient.addColorStop(1, 'rgba(14, 165, 233, 0.8)'); // Deeper cerulean
-
-      ctx.beginPath();
-      ctx.moveTo(0, height);
-      ctx.lineTo(springs[0].x, springs[0].height);
-
-      for (let i = 0; i < springs.length - 1; i++) {
-        let p1 = springs[i];
-        let p2 = springs[i + 1];
-        let cx = (p1.x + p2.x) / 2;
-        let cy = (p1.height + p2.height) / 2;
-        ctx.quadraticCurveTo(p1.x, p1.height, cx, cy);
-      }
-      
-      ctx.lineTo(width, springs[springs.length - 1].height);
-      ctx.lineTo(width, height);
-      ctx.closePath();
-      
-      ctx.fillStyle = gradient;
-      ctx.fill();
-
-      // Top edge crisp highlight
-      ctx.beginPath();
-      ctx.moveTo(springs[0].x, springs[0].height);
-      for (let i = 0; i < springs.length - 1; i++) {
-        let p1 = springs[i];
-        let p2 = springs[i + 1];
-        let cx = (p1.x + p2.x) / 2;
-        let cy = (p1.height + p2.height) / 2;
-        ctx.quadraticCurveTo(p1.x, p1.height, cx, cy);
-      }
-      ctx.lineWidth = 4;
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
-      ctx.stroke();
-
-      requestAnimationFrame(drawFluid);
-    }
-
-    // --- Event Listeners ---
-    window.addEventListener('resize', initFluid);
-
-    window.addEventListener('mousemove', (e) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-      mouse.dy = mouse.y - mouse.prevY;
-      mouse.prevY = mouse.y;
-    });
-
-    window.addEventListener('touchmove', (e) => {
-      mouse.x = e.touches[0].clientX;
-      mouse.y = e.touches[0].clientY;
-      mouse.dy = mouse.y - mouse.prevY;
-      mouse.prevY = mouse.y;
-    });
-
-    // Idle splashes
-    setInterval(() => {
-        if(Math.abs(mouse.dy) < 1) {
-            let randomIndex = Math.floor(Math.random() * springs.length);
-            springs[randomIndex].velocity -= Math.random() * 25 + 15;
-        }
-    }, 2500);
-
-    initFluid();
-    drawFluid();
-  &lt;/script&gt;
-
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <footer>
+        <p>&copy; 2026 Sudam's Code Cafe. Engineered for the frontend.</p>
+    </footer>
 
     <script>
-        // 1. SMART IFRAME INJECTION
-        document.addEventListener("DOMContentLoaded", function() {
-            // Because Prism wraps text in <span> tags, we use .textContent to grab the raw text safely 
-            // BEFORE Prism initializes, ensuring the iframe gets clean, runnable code.
-            const rawCode = document.getElementById('raw-code-block').textContent;
-            const iframe = document.getElementById('preview-iframe');
-            iframe.srcdoc = rawCode;
+        const canvas = document.getElementById('physics-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particles = [];
+        const colors = ['#3b82f6', '#60a5fa', '#93c5fd', '#1d4ed8'];
+
+        // Track mouse position and interaction
+        const mouse = {
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            radius: 300 // The size of the magnetic gravity well
+        };
+
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.x;
+            mouse.y = e.y;
         });
 
-        // 2. TOGGLE SYSTEM (Preview vs Code)
-        function switchView(viewId) {
-            document.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.view-panel').forEach(panel => panel.classList.remove('active'));
-            
-            event.target.classList.add('active');
-            document.getElementById(viewId).classList.add('active');
-        }
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            init(); // Reset particles to fit new screen size
+        });
 
-        // 3. FULLSCREEN API
-        function toggleFullScreen() {
-            const workspace = document.getElementById('workspace');
-            if (!document.fullscreenElement) {
-                workspace.requestFullscreen().catch(err => {
-                    alert(`Error attempting to enable fullscreen: ${err.message}`);
-                });
-                workspace.style.borderRadius = "0"; 
-            } else {
-                document.exitFullscreen();
-                workspace.style.borderRadius = "24px"; 
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 1;
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+                this.mass = Math.random() * 2 + 1;
+                
+                // Initial movement speed
+                this.velocity = {
+                    x: (Math.random() - 0.5) * 1.5,
+                    y: (Math.random() - 0.5) * 1.5
+                };
             }
-        }
 
-        // 4. NATIVE SHARE API
-        async function sharePage() {
-            if (navigator.share) {
-                try {
-                    await navigator.share({
-                        title: document.title,
-                        text: "Check out this interactive UI component from Sudam's Code Cafe!",
-                        url: window.location.href
-                    });
-                } catch (err) {
-                    console.log('Share window closed or failed.');
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+
+            update() {
+                // Calculate distance from mouse
+                let dx = mouse.x - this.x;
+                let dy = mouse.y - this.y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+
+                // If particle is within the gravity well
+                if (distance < mouse.radius) {
+                    // Force intensity (stronger closer to the center)
+                    let force = (mouse.radius - distance) / mouse.radius;
+                    
+                    // The core trick: Add tangential velocity to create an orbit instead of just snapping to the cursor
+                    let tangentialX = -dy / distance; 
+                    let tangentialY = dx / distance;
+
+                    // Apply magnetic pull + orbital push
+                    let accelerationX = (dx / distance) * force * 0.1;
+                    let accelerationY = (dy / distance) * force * 0.1;
+
+                    this.velocity.x += accelerationX + tangentialX * force * 0.15;
+                    this.velocity.y += accelerationY + tangentialY * force * 0.15;
                 }
-            } else {
-                navigator.clipboard.writeText(window.location.href);
-                alert("Link copied to clipboard! Ready to share.");
+
+                // Add slight friction so particles don't accelerate to infinity
+                this.velocity.x *= 0.98;
+                this.velocity.y *= 0.98;
+
+                // Move particle
+                this.x += this.velocity.x;
+                this.y += this.velocity.y;
+
+                // Gentle screen wrap to keep them on canvas
+                if (this.x < 0) this.x = canvas.width;
+                if (this.x > canvas.width) this.x = 0;
+                if (this.y < 0) this.y = canvas.height;
+                if (this.y > canvas.height) this.y = 0;
+
+                this.draw();
             }
         }
+
+        function init() {
+            particles = [];
+            // Scale particle count based on screen size to maintain performance
+            let numParticles = Math.floor((canvas.width * canvas.height) / 8000);
+            if(numParticles > 400) numParticles = 400; // Hard cap
+
+            for (let i = 0; i < numParticles; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Motion Trail Effect!
+            // Instead of clearing the canvas (ctx.clearRect), we draw a semi-transparent 
+            // rectangle over the previous frame. The rgb value perfectly matches your --bg-base color.
+            ctx.fillStyle = 'rgba(240, 244, 248, 0.2)'; 
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            particles.forEach(particle => {
+                particle.update();
+            });
+        }
+
+        init();
+        animate();
     </script>
 </body>
 </html>
