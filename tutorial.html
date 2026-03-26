@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial | Sudam's Code Cafe</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Tech-Blue Cafe Variables */
+        :root {
+            --bg-base: #f0f4f8; 
+            --glass-panel: rgba(255, 255, 255, 0.45);
+            --glass-hover: rgba(255, 255, 255, 0.75);
+            --text-main: #0f172a; 
+            --text-muted: #475569; 
+            --accent-main: #3b82f6; 
+            --border-glass: rgba(255, 255, 255, 0.7);
+            --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+            --code-bg: #1e293b;
+            --code-text: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        /* Glass Header */
+        header {
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+            background: var(--glass-panel);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: 100px;
+            padding: 16px 32px;
+            margin: 0 auto;
+            max-width: 1200px;
+            width: 92%;
+            box-shadow: var(--shadow-glass);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-logo {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .back-btn {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.3s ease;
+        }
+
+        .back-btn:hover { color: var(--accent-main); }
+
+        /* Main Content Container */
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 5%;
+        }
+
+        /* Video Section */
+        .video-container {
+            background: var(--glass-panel);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glass);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: var(--shadow-glass);
+            margin-bottom: 40px;
+        }
+
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 16px;
+            background: #000;
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border: none;
+        }
+
+        .tutorial-header {
+            margin-top: 24px;
+        }
+
+        .tutorial-title {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+
+        .tutorial-desc {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* Tabbed Code System */
+        .code-workspace {
+            background: var(--glass-panel);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glass);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: var(--shadow-glass);
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.5);
+            border-bottom: 1px solid var(--border-glass);
+            overflow-x: auto; /* Responsive scrolling for tabs */
+        }
+
+        .tab-btn {
+            padding: 16px 24px;
+            background: transparent;
+            border: none;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            color: var(--accent-main);
+            background: rgba(255, 255, 255, 0.8);
+            border-bottom: 3px solid var(--accent-main);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 0; /* Removing padding so the code block fills the space */
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Code Styling with JetBrains Mono */
+        pre {
+            margin: 0;
+            padding: 24px;
+            background: var(--code-bg);
+            color: var(--code-text);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            overflow-x: auto;
+            border-radius: 0 0 24px 24px;
+        }
+
+        /* Live Preview Styling */
+        .preview-pane {
+            padding: 40px;
+            background: #fff;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0 0 24px 24px;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 640px) {
+            header { width: 95%; padding: 12px 20px; top: 12px; }
+            .tutorial-title { font-size: 1.5rem; }
+            .tab-btn { padding: 12px 16px; font-size: 0.85rem; }
+            .video-container { padding: 16px; border-radius: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="brand-logo">
+            Sudam's Code Cafe
+        </a>
+        <a href="index.html" class="back-btn">
+            &larr; Back to Studio
+        </a>
+    </header>
+
+    <main class="container" id="tutorial-content">
+        <p style="text-align: center; padding: 40px; color: var(--text-muted);">Brewing tutorial data...</p>
+    </main>
+
+    <script>
+        // 1. Get the Tutorial ID from the URL (e.g., tutorial.html?id=liquid-physics-hover)
+        const urlParams = new URLSearchParams(window.location.search);
+        const tutorialId = urlParams.get('id');
+
+        async function loadSingleTutorial() {
+            try {
+                // 2. Fetch the JSON data
+                const response = await fetch('./data/tutorials.json');
+                const tutorials = await response.json();
+
+                // 3. Find the specific tutorial by ID
+                const tutorial = tutorials.find(t => t.id === tutorialId);
+
+                if (!tutorial) {
+                    document.getElementById('tutorial-content').innerHTML = `<h2>Tutorial not found.</h2><a href="index.html">Go back</a>`;
+                    return;
+                }
+
+                // 4. Inject the HTML into the page
+                document.getElementById('tutorial-content').innerHTML = `
+                    <div class="video-container">
+                        <div class="video-wrapper">
+                            <iframe 
+                                src="https://www.youtube.com/embed/${tutorial.youtubeVideoId}" 
+                                title="YouTube video player" frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+                        <div class="tutorial-header">
+                            <h1 class="tutorial-title">${tutorial.title}</h1>
+                            <p class="tutorial-desc">${tutorial.description}</p>
+                        </div>
+                    </div>
+
+                    <div class="code-workspace">
+                        <div class="tabs">
+                            <button class="tab-btn active" onclick="switchTab(event, 'preview')">Live Preview</button>
+                            <button class="tab-btn" onclick="switchTab(event, 'html')">index.html</button>
+                            <button class="tab-btn" onclick="switchTab(event, 'css')">style.css</button>
+                            <button class="tab-btn" onclick="switchTab(event, 'js')">script.js</button>
+                        </div>
+
+                        <div id="preview" class="tab-content active">
+                            <div class="preview-pane">
+                                <iframe id="preview-frame" style="width: 100%; height: 300px; border: none;"></iframe>
+                            </div>
+                        </div>
+
+                        <div id="html" class="tab-content">
+                            <pre><code>${escapeHTML(tutorial.codeSnippets.html)}</code></pre>
+                        </div>
+
+                        <div id="css" class="tab-content">
+                            <pre><code>${escapeHTML(tutorial.codeSnippets.css)}</code></pre>
+                        </div>
+
+                        <div id="js" class="tab-content">
+                            <pre><code>${escapeHTML(tutorial.codeSnippets.js)}</code></pre>
+                        </div>
+                    </div>
+                `;
+
+                // 5. Build the Live Preview iframe content dynamically!
+                const previewFrame = document.getElementById('preview-frame');
+                const previewDoc = previewFrame.contentDocument || previewFrame.contentWindow.document;
+                
+                const combinedCode = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <style>${tutorial.codeSnippets.css}</style>
+                    </head>
+                    <body style="display:flex; justify-content:center; align-items:center; height:100vh; margin:0; background:#f0f4f8;">
+                        ${tutorial.codeSnippets.html}
+                        <script>${tutorial.codeSnippets.js}<\/script>
+                    </body>
+                    </html>
+                `;
+                
+                previewDoc.open();
+                previewDoc.write(combinedCode);
+                previewDoc.close();
+
+            } catch (error) {
+                console.error("Error loading tutorial:", error);
+                document.getElementById('tutorial-content').innerHTML = '<p>Error loading tutorial data.</p>';
+            }
+        }
+
+        // Tab Switching Logic
+        function switchTab(event, tabId) {
+            // Remove active class from all buttons and contents
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            // Add active class to clicked button and target content
+            event.currentTarget.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // HTML Escaping Helper
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag] || tag)
+            );
+        }
+
+        // Initialize the page
+        loadSingleTutorial();
+    </script>
+</body>
+</html>
