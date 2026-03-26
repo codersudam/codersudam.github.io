@@ -13,12 +13,12 @@
     <style>
         /* Tech-Blue Cafe Variables */
         :root {
-            --bg-base: #f0f4f8; /* Crisp, cool light theme background */
+            --bg-base: #f0f4f8; 
             --glass-panel: rgba(255, 255, 255, 0.45);
             --glass-hover: rgba(255, 255, 255, 0.75);
             --text-main: #0f172a; 
             --text-muted: #475569; 
-            --accent-main: #3b82f6; /* Techy Royal Blue */
+            --accent-main: #3b82f6; 
             --accent-glow: rgba(59, 130, 246, 0.4);
             --border-glass: rgba(255, 255, 255, 0.7);
             --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
@@ -43,9 +43,7 @@
             overflow-x: hidden;
         }
 
-        /* ---------------------------------
-           ORBITAL SWARM PHYSICS CANVAS
-           --------------------------------- */
+        /* ORBITAL SWARM PHYSICS CANVAS */
         #physics-canvas {
             position: fixed;
             top: 0;
@@ -356,63 +354,11 @@
     <main class="container">
         
         <h2 class="section-header">Freshly Brewed</h2>
-        
-        <a href="liquid-physics-hover.html" class="featured-card">
-            <div class="featured-media">
-                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80" alt="Featured Component">
-            </div>
-            <div class="featured-content">
-                <span class="badge-blue">New Upload</span>
-                <h3 class="featured-title">Liquid Physics Hover Effects</h3>
-                <p class="featured-desc">An interactive interface reacting to cursor movement with fluid-like properties and advanced mathematical transitions. Built purely with Vanilla JS.</p>
-                <div class="btn-primary">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                    Source & Preview
-                </div>
-            </div>
-        </a>
+        <div id="featured-container"></div>
 
         <h2 class="section-header">The Menu</h2>
-        
-        <div class="menu-grid" id="project-grid">
-            
-            <a href="advanced-glassmorphism.html" class="menu-item">
-                <div class="menu-media">
-                    <img src="https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&w=800&q=80" alt="Glassmorphism">
-                </div>
-                <div class="menu-tags">
-                    <span class="tag">HTML</span>
-                    <span class="tag">CSS</span>
-                </div>
-                <h3 class="menu-title">Advanced Glassmorphism</h3>
-                <p class="menu-desc">Leveraging modern backdrop-filters and subtle nested shadows to create depth in a light theme.</p>
-            </a>
+        <div class="menu-grid" id="project-grid"></div>
 
-            <a href="nav-micro-interactions.html" class="menu-item">
-                <div class="menu-media">
-                    <img src="https://images.unsplash.com/photo-1618761714954-0b8cd0026356?auto=format&fit=crop&w=800&q=80" alt="Interactions">
-                </div>
-                <div class="menu-tags">
-                    <span class="tag">UI/UX</span>
-                    <span class="tag">JS</span>
-                </div>
-                <h3 class="menu-title">Nav State Interactions</h3>
-                <p class="menu-desc">Building smooth, accessible navigation menus with fluid state transitions that respond instantly.</p>
-            </a>
-
-            <a href="minimal-cards.html" class="menu-item">
-                <div class="menu-media">
-                    <img src="https://images.unsplash.com/photo-1507721999472-8ed4421c4af2?auto=format&fit=crop&w=800&q=80" alt="Cards">
-                </div>
-                <div class="menu-tags">
-                    <span class="tag">Design</span>
-                    <span class="tag">CSS</span>
-                </div>
-                <h3 class="menu-title">Minimalist Data Cards</h3>
-                <p class="menu-desc">Clean, simple UI designs for displaying complex JSON data structures efficiently.</p>
-            </a>
-
-        </div>
     </main>
 
     <footer>
@@ -420,6 +366,7 @@
     </footer>
 
     <script>
+        // --- ORBITAL SWARM PHYSICS ---
         const canvas = document.getElementById('physics-canvas');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
@@ -428,11 +375,10 @@
         let particles = [];
         const colors = ['#3b82f6', '#60a5fa', '#93c5fd', '#1d4ed8'];
 
-        // Track mouse position and interaction
         const mouse = {
             x: canvas.width / 2,
             y: canvas.height / 2,
-            radius: 300 // The size of the magnetic gravity well
+            radius: 300 
         };
 
         window.addEventListener('mousemove', (e) => {
@@ -443,7 +389,7 @@
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            init(); // Reset particles to fit new screen size
+            init(); 
         });
 
         class Particle {
@@ -453,8 +399,6 @@
                 this.size = Math.random() * 2 + 1;
                 this.color = colors[Math.floor(Math.random() * colors.length)];
                 this.mass = Math.random() * 2 + 1;
-                
-                // Initial movement speed
                 this.velocity = {
                     x: (Math.random() - 0.5) * 1.5,
                     y: (Math.random() - 0.5) * 1.5
@@ -469,21 +413,14 @@
             }
 
             update() {
-                // Calculate distance from mouse
                 let dx = mouse.x - this.x;
                 let dy = mouse.y - this.y;
                 let distance = Math.sqrt(dx * dx + dy * dy);
 
-                // If particle is within the gravity well
                 if (distance < mouse.radius) {
-                    // Force intensity (stronger closer to the center)
                     let force = (mouse.radius - distance) / mouse.radius;
-                    
-                    // The core trick: Add tangential velocity to create an orbit instead of just snapping to the cursor
                     let tangentialX = -dy / distance; 
                     let tangentialY = dx / distance;
-
-                    // Apply magnetic pull + orbital push
                     let accelerationX = (dx / distance) * force * 0.1;
                     let accelerationY = (dy / distance) * force * 0.1;
 
@@ -491,15 +428,12 @@
                     this.velocity.y += accelerationY + tangentialY * force * 0.15;
                 }
 
-                // Add slight friction so particles don't accelerate to infinity
                 this.velocity.x *= 0.98;
                 this.velocity.y *= 0.98;
 
-                // Move particle
                 this.x += this.velocity.x;
                 this.y += this.velocity.y;
 
-                // Gentle screen wrap to keep them on canvas
                 if (this.x < 0) this.x = canvas.width;
                 if (this.x > canvas.width) this.x = 0;
                 if (this.y < 0) this.y = canvas.height;
@@ -511,9 +445,8 @@
 
         function init() {
             particles = [];
-            // Scale particle count based on screen size to maintain performance
             let numParticles = Math.floor((canvas.width * canvas.height) / 8000);
-            if(numParticles > 400) numParticles = 400; // Hard cap
+            if(numParticles > 400) numParticles = 400; 
 
             for (let i = 0; i < numParticles; i++) {
                 particles.push(new Particle());
@@ -522,10 +455,6 @@
 
         function animate() {
             requestAnimationFrame(animate);
-            
-            // Motion Trail Effect!
-            // Instead of clearing the canvas (ctx.clearRect), we draw a semi-transparent 
-            // rectangle over the previous frame. The rgb value perfectly matches your --bg-base color.
             ctx.fillStyle = 'rgba(240, 244, 248, 0.2)'; 
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -536,6 +465,71 @@
 
         init();
         animate();
+
+        // --- DYNAMIC DATA INTEGRATION ---
+        async function loadTutorials() {
+            try {
+                // Fetch the JSON file (ensure this file exists at this path in your repo)
+                const response = await fetch('./data/tutorials.json');
+                const tutorials = await response.json();
+
+                if (!tutorials || tutorials.length === 0) return;
+
+                // 1. Render "Freshly Brewed" (First item)
+                const featured = tutorials;
+                const featuredContainer = document.getElementById('featured-container');
+                const featuredImg = featured.thumbnailUrl || `https://img.youtube.com/vi/${featured.youtubeVideoId}/maxresdefault.jpg`;
+
+                featuredContainer.innerHTML = `
+                    <a href="tutorial.html?id=${featured.id}" class="featured-card">
+                        <div class="featured-media">
+                            <img src="${featuredImg}" alt="${featured.title}">
+                        </div>
+                        <div class="featured-content">
+                            <span class="badge-blue">New Upload</span>
+                            <h3 class="featured-title">${featured.title}</h3>
+                            <p class="featured-desc">${featured.description}</p>
+                            <div class="btn-primary">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                                Watch & Get Code
+                            </div>
+                        </div>
+                    </a>
+                `;
+
+                // 2. Render "The Menu" Grid (Remaining items)
+                const gridContainer = document.getElementById('project-grid');
+                let gridHTML = '';
+                
+                for (let i = 1; i < tutorials.length; i++) {
+                    const tut = tutorials[i];
+                    const tutImg = tut.thumbnailUrl || `https://img.youtube.com/vi/${tut.youtubeVideoId}/maxresdefault.jpg`;
+                    const tagsHTML = tut.tags ? tut.tags.map(tag => `<span class="tag">${tag}</span>`).join('') : '';
+
+                    gridHTML += `
+                        <a href="tutorial.html?id=${tut.id}" class="menu-item">
+                            <div class="menu-media">
+                                <img src="${tutImg}" alt="${tut.title}">
+                            </div>
+                            <div class="menu-tags">
+                                ${tagsHTML}
+                            </div>
+                            <h3 class="menu-title">${tut.title}</h3>
+                            <p class="menu-desc">${tut.description}</p>
+                        </a>
+                    `;
+                }
+                
+                gridContainer.innerHTML = gridHTML;
+
+            } catch (error) {
+                console.error('Error loading the tutorials:', error);
+                document.getElementById('featured-container').innerHTML = '<p style="text-align:center; padding: 20px;">Brewing the latest tutorials... (Please ensure data/tutorials.json exists)</p>';
+            }
+        }
+
+        // Initialize the fetch
+        loadTutorials();
     </script>
 </body>
 </html>
