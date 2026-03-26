@@ -1,0 +1,28 @@
+[
+  {
+    "id": "tutorial-001",
+    "title": "Modern Minimalist Card Component",
+    "description": "Learn how to build a clean, fully responsive card layout from scratch.",
+    "youtubeVideoId": "YOUR_YOUTUBE_VIDEO_ID",
+    "thumbnailUrl": "images/thumbnails/card-ui.jpg",
+    "tags": ["html", "css", "ui-design"],
+    "codeSnippets": {
+      "html": "<div class=\"card\">\n  <h2>Card Title</h2>\n  <p>Minimal content here.</p>\n</div>",
+      "css": ".card {\n  display: flex;\n  border-radius: 8px;\n  box-shadow: 0 4px 6px rgba(0,0,0,0.1);\n}",
+      "js": "// No JavaScript needed for this component"
+    }
+  },
+  {
+    "id": "tutorial-002",
+    "title": "Interactive Navigation Bar",
+    "description": "A responsive navigation bar with a mobile hamburger menu toggle.",
+    "youtubeVideoId": "ANOTHER_VIDEO_ID",
+    "thumbnailUrl": "images/thumbnails/navbar.jpg",
+    "tags": ["html", "css", "javascript"],
+    "codeSnippets": {
+      "html": "<nav id=\"main-nav\">...</nav>",
+      "css": "#main-nav { background: #fff; }",
+      "js": "document.getElementById('menu-toggle').addEventListener('click', () => {...});"
+    }
+  }
+]
