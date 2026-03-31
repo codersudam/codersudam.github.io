@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced 3D Particle Data Node</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;600&display=swap');
+
+    /* Flawlessly aligned and fully responsive layout */
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #030305;
+      background-image: radial-gradient(circle at 50% 0%, #13131f 0%, #030305 80%);
+      font-family: 'Inter', sans-serif;
+      padding: 24px;
+      box-sizing: border-box;
+      perspective: 2000px;
+      overflow: hidden;
+    }
+
+    /* Responsive container with dynamic aspect ratio */
+    .data-node {
+      position: relative;
+      width: 100%;
+      max-width: 380px;
+      aspect-ratio: 3 / 4;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      transform-style: preserve-3d;
+      transition: transform 0.1s ease-out, box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      cursor: crosshair;
+    }
+
+    /* Ambient glow that reacts to the environment */
+    .data-node::before {
+      content: '';
+      position: absolute;
+      inset: -50%;
+      background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(99, 102, 241, 0.15), transparent 50%);
+      z-index: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      opacity: 0;
+    }
+
+    .data-node:hover::before {
+      opacity: 1;
+    }
+
+    /* HTML5 Canvas integration */
+    #particleCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+
+    /* Complex UI Overlay */
+    .ui-overlay {
+      position: relative;
+      z-index: 2;
+      padding: 30px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-sizing: border-box;
+      transform: translateZ(40px); /* Pushes UI off the glass surface */
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      color: #10b981;
+      font-size: 0.75rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .pulse {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #10b981;
+      animation: blink 2s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    .id-tag {
+      font-family: 'JetBrains Mono', monospace;
+      color: #6b7280;
+      font-size: 0.75rem;
+    }
+
+    .main-content {
+      margin-top: auto;
+      margin-bottom: 20px;
+    }
+
+    .title {
+      color: #ffffff;
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 0 0 8px 0;
+      letter-spacing: -0.5px;
+      text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-top: 25px;
+    }
+
+    .metric-box {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 12px;
+      backdrop-filter: blur(5px);
+    }
+
+    .m-label {
+      color: #9ca3af;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .m-value {
+      font-family: 'JetBrains Mono', monospace;
+      color: #e0e7ff;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="data-node" id="node">
+    <canvas id="particleCanvas"></canvas>
+    
+    <div class="ui-overlay">
+      <div class="header">
+        <div class="status">
+          <div class="pulse"></div>
+          Active Sync
+        </div>
+        <div class="id-tag">NODE://89.A4</div>
+      </div>
+
+      <div class="main-content">
+        <h2 class="title">Neural<br>Network</h2>
+        <div class="metrics">
+          <div class="metric-box">
+            <div class="m-label">Latency</div>
+            <div class="m-value">12<span style="color:#6b7280; font-size:0.8rem;">ms</span></div>
+          </div>
+          <div class="metric-box">
+            <div class="m-label">Throughput</div>
+            <div class="m-value">98<span style="color:#6b7280; font-size:0.8rem;">%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const node = document.getElementById('node');
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // --- 1. 3D CSS Tilt & Glow Logic ---
+    node.addEventListener('mousemove', (e) => {
+      const rect = node.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      
+      const rotateX = ((y - centerY) / centerY) * -10; // Subtle 10deg max tilt
+      const rotateY = ((x - centerX) / centerX) * 10;
+
+      node.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+      node.style.setProperty('--mouse-x', `${(x / rect.width) * 100}%`);
+      node.style.setProperty('--mouse-y', `${(y / rect.height) * 100}%`);
+    });
+
+    node.addEventListener('mouseleave', () => {
+      node.style.transform = `rotateX(0deg) rotateY(0deg)`;
+      node.style.transition = 'transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)';
+      setTimeout(() => node.style.transition = 'transform 0.1s ease-out', 600);
+    });
+
+    // --- 2. Advanced Canvas Particle Physics ---
+    let particlesArray = [];
+    
+    // Ensure canvas stays perfectly aligned with the responsive container
+    function resizeCanvas() {
+      canvas.width = node.offsetWidth;
+      canvas.height = node.offsetHeight;
+    }
+    
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.vx = (Math.random() - 0.5) * 0.8;
+        this.vy = (Math.random() - 0.5) * 0.8;
+        this.radius = Math.random() * 1.5 + 0.5;
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+
+        // Bounce off responsive walls
+        if (this.x < 0 || this.x > canvas.width) this.vx = -this.vx;
+        if (this.y < 0 || this.y > canvas.height) this.vy = -this.vy;
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(99, 102, 241, 0.8)';
+        ctx.fill();
+      }
+    }
+
+    function init() {
+      particlesArray = [];
+      // Dynamic particle count based on container width to maintain performance
+      let numberOfParticles = (canvas.width * canvas.height) / 4000;
+      for (let i = 0; i < numberOfParticles; i++) {
+        particlesArray.push(new Particle());
+      }
+    }
+
+    function handleParticles() {
+      for (let i = 0; i < particlesArray.length; i++) {
+        particlesArray[i].update();
+        particlesArray[i].draw();
+        
+        // Connect nearby particles with lines (O(n^2) optimized by short-circuiting)
+        for (let j = i; j < particlesArray.length; j++) {
+          const dx = particlesArray[i].x - particlesArray[j].x;
+          const dy = particlesArray[i].y - particlesArray[j].y;
+          const distance = dx * dx + dy * dy;
+          
+          if (distance < 5000) { // Connection threshold
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(99, 102, 241, ${1 - distance/5000})`;
+            ctx.lineWidth = 0.5;
+            ctx.moveTo(particlesArray[i].x, particlesArray[i].y);
+            ctx.lineTo(particlesArray[j].x, particlesArray[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      handleParticles();
+      requestAnimationFrame(animate);
+    }
+
+    init();
+    animate();
+
+    // Re-initialize particles to fit perfectly when layout changes
+    const resizeObserver = new ResizeObserver(() => {
+      resizeCanvas();
+      init();
+    });
+    resizeObserver.observe(node);
+
+  </script>
+
+</body>
+</html>
