@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinematic Split-Text Reveal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <style>
+        /* Full viewport foundation - NO zooming required! */
+        body {
+            margin: 0;
+            height: 100vh;
+            width: 100vw;
+            background-color: #030303; /* Abyss black */
+            font-family: 'Inter', sans-serif;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* The master container for the interaction */
+        .split-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: crosshair;
+        }
+
+        /* This placeholder is invisible. Its only job is to physically take up 
+           space in the DOM so our absolutely positioned halves have a container size.
+        */
+        .text-placeholder {
+            font-size: 14vw; /* Massive viewport sizing */
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: -0.04em;
+            margin: 0;
+            line-height: 1;
+            opacity: 0; 
+            pointer-events: none;
+            user-select: none;
+        }
+
+        /* Shared styling for the two visual halves */
+        .text-half {
+            position: absolute;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 14vw;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: -0.04em;
+            margin: 0;
+            line-height: 1;
+            color: #ffffff;
+            pointer-events: none;
+            /* Hardware acceleration for buttery smooth JS transforms */
+            will-change: transform; 
+        }
+
+        /* THE MAGIC: We cut the exact same word in half horizontally */
+        .top {
+            clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
+            z-index: 3;
+        }
+
+        .bottom {
+            clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%);
+            z-index: 1;
+        }
+
+        /* The secret content revealed in the void */
+        .reveal-content {
+            position: absolute;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            /* Handled by JS Lerp, but setting initial state here */
+            opacity: 0; 
+            transform: scale(0.8);
+            will-change: transform, opacity;
+            pointer-events: none; /* Ignored until fully revealed */
+        }
+
+        .reveal-content span {
+            font-size: 1.5rem;
+            font-weight: 300;
+            color: #a1a1aa;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .cta-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            background-color: #ffffff;
+            color: #000000;
+            border-radius: 100px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            pointer-events: auto; /* Allows the button to be clicked */
+        }
+
+        .cta-button:hover {
+            background-color: #d4d4d8;
+        }
+
+        .cta-button i {
+            margin-left: 8px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="split-wrapper" id="wrapper">
+        <h1 class="text-placeholder">INNOVATE</h1>
+        
+        <h1 class="text-half bottom" id="bottomText">INNOVATE</h1>
+        
+        <div class="reveal-content" id="reveal">
+            <span>Creative Studio</span>
+            <a href="#" class="cta-button">View Work <i class="ph ph-arrow-right"></i></a>
+        </div>
+        
+        <h1 class="text-half top" id="topText">INNOVATE</h1>
+    </div>
+
+    <script>
+        const topText = document.getElementById('topText');
+        const bottomText = document.getElementById('bottomText');
+        const reveal = document.getElementById('reveal');
+
+        // Physics Configuration
+        const maxSplit = 80;     // Maximum pixels the text will split apart (160px total void)
+        const proximity = 300;   // How close the mouse needs to be (on the Y axis) to trigger it
+
+        // LERP Variables
+        let targetSplit = 0;
+        let currentSplit = 0;
+        let targetOpacity = 0;
+        let currentOpacity = 0;
+
+        // Track only the vertical distance of the mouse relative to the screen center
+        window.addEventListener('mousemove', (e) => {
+            const centerY = window.innerHeight / 2;
+            // Get absolute distance from the mouse to the vertical center
+            const distanceY = Math.abs(e.clientY - centerY);
+
+            if (distanceY < proximity) {
+                // Math: Convert distance to a percentage (0 to 1), then apply an ease-out curve
+                const progress = 1 - (distanceY / proximity);
+                const easeProgress = 1 - Math.pow(1 - progress, 3); // Cubic ease-out
+
+                targetSplit = maxSplit * easeProgress;
+                targetOpacity = easeProgress;
+                
+                // Enable button clicks only when fully open
+                reveal.style.pointerEvents = easeProgress > 0.8 ? 'auto' : 'none';
+            } else {
+                targetSplit = 0;
+                targetOpacity = 0;
+                reveal.style.pointerEvents = 'none';
+            }
+        });
+
+        // The Lerp Animation Loop
+        function animate() {
+            // Lerp Formula: current += (target - current) * friction
+            currentSplit += (targetSplit - currentSplit) * 0.08;
+            currentOpacity += (targetOpacity - currentOpacity) * 0.08;
+
+            // Apply Hardware-Accelerated Transforms to the DOM
+            topText.style.transform = `translate3d(0, -${currentSplit}px, 0)`;
+            bottomText.style.transform = `translate3d(0, ${currentSplit}px, 0)`;
+            
+            // Link scale and opacity of the inner content to the same physics
+            reveal.style.opacity = currentOpacity;
+            reveal.style.transform = `scale(${0.8 + (0.2 * currentOpacity)}) translate3d(0, 0, 0)`;
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
