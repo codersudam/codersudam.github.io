@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liquid Mercury Magnetic UI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Full viewport foundation - NO zooming required! */
+        body {
+            margin: 0;
+            height: 100vh;
+            width: 100vw;
+            background-color: #000000; /* Pure black is required for the contrast filter */
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            -webkit-font-smoothing: antialiased;
+            cursor: none; /* Hide the default cursor for maximum immersion */
+        }
+
+        /* THE SECRET SAUCE: The Gooey Container
+           By applying a heavy blur, the white circles get fuzzy edges.
+           By immediately applying a massive contrast boost, the browser sharpens 
+           those fuzzy edges into a solid, crisp line. When two fuzzy edges overlap, 
+           the contrast fuses them together like liquid!
+        */
+        .gooey-container {
+            position: absolute;
+            inset: 0;
+            background-color: #000000;
+            filter: blur(20px) contrast(40);
+            -webkit-filter: blur(20px) contrast(40);
+            z-index: 1;
+        }
+
+        /* Shared blob styling */
+        .blob {
+            position: absolute;
+            background-color: #ffffff;
+            border-radius: 50%;
+            will-change: transform;
+        }
+
+        /* The giant center mass */
+        .core {
+            /* Uses Viewport Height so it's always massively scaled */
+            width: 35vh; 
+            height: 35vh;
+            top: 50%;
+            left: 50%;
+            /* Centers the blob on its absolute coordinates */
+            margin-top: -17.5vh;
+            margin-left: -17.5vh;
+        }
+
+        /* The blob that replaces the user's cursor */
+        .pointer {
+            width: 12vh;
+            height: 12vh;
+            top: 0;
+            left: 0;
+            margin-top: -6vh;
+            margin-left: -6vh;
+            pointer-events: none;
+        }
+
+        /* The Crisp Overlay Text 
+           Because the gooey filter destroys crisp typography, the text MUST sit 
+           in a separate Z-Index layer above the filter container.
+        */
+        .hero-text {
+            position: relative;
+            z-index: 2;
+            font-size: 10vw;
+            font-weight: 900;
+            letter-spacing: -0.04em;
+            margin: 0;
+            pointer-events: none;
+            
+            /* Another magic trick: Mix Blend Mode
+               The text is white. Over the black background, it stays white.
+               But when the white liquid blob moves behind it, the difference 
+               inverts the text to pure black flawlessly!
+            */
+            color: #ffffff;
+            mix-blend-mode: difference;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="gooey-container">
+        <div class="blob core" id="core"></div>
+        <div class="blob pointer" id="pointer"></div>
+    </div>
+
+    <h1 class="hero-text">FUSE</h1>
+
+    <script>
+        const pointer = document.getElementById('pointer');
+        const core = document.getElementById('core');
+
+        // Mouse tracking variables
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+
+        // Pointer Lerp variables
+        let pointerX = mouseX;
+        let pointerY = mouseY;
+
+        // Core Lerp variables
+        let coreX = 0;
+        let coreY = 0;
+        let targetCoreX = 0;
+        let targetCoreY = 0;
+
+        // Physics Configuration
+        const magneticRadius = window.innerWidth * 0.3; // How close before the core reacts
+
+        // Track raw mouse position
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        // The Physics Engine Loop
+        function animate() {
+            // 1. LERP THE POINTER (Smooth cursor follow)
+            pointerX += (mouseX - pointerX) * 0.15;
+            pointerY += (mouseY - pointerY) * 0.15;
+            pointer.style.transform = `translate3d(${pointerX}px, ${pointerY}px, 0)`;
+
+            // 2. CALCULATE MAGNETIC PULL FOR THE CORE
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            
+            // Distance from mouse to the exact center of the screen
+            const dx = mouseX - centerX;
+            const dy = mouseY - centerY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            // If the mouse gets close, the core "reaches" out towards it
+            if (distance < magneticRadius) {
+                // The closer the mouse, the stronger the pull
+                const force = (magneticRadius - distance) / magneticRadius;
+                // Move the core a maximum of 15% of the distance towards the mouse
+                targetCoreX = dx * force * 0.15;
+                targetCoreY = dy * force * 0.15;
+            } else {
+                // Snap back to absolute center
+                targetCoreX = 0;
+                targetCoreY = 0;
+            }
+
+            // 3. LERP THE CORE (Heavy, viscous movement)
+            coreX += (targetCoreX - coreX) * 0.08;
+            coreY += (targetCoreY - coreY) * 0.08;
+            core.style.transform = `translate3d(${coreX}px, ${coreY}px, 0)`;
+
+            // Loop forever
+            requestAnimationFrame(animate);
+        }
+
+        // Start the engine
+        animate();
+    </script>
+</body>
+</html>
