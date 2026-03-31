@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spring Physics Data Node</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Full viewport foundation - NO zooming required! */
+        body {
+            margin: 0;
+            height: 100vh;
+            width: 100vw;
+            background-color: #030305; /* Deep processing black */
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            -webkit-font-smoothing: antialiased;
+            user-select: none;
+        }
+
+        /* SVG layer for the connecting tether */
+        #tetherCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .tether-line {
+            fill: none;
+            stroke: #3b82f6; /* Technical blue */
+            stroke-width: 4;
+            stroke-linecap: round;
+            /* Glowing line effect */
+            filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.6));
+        }
+
+        /* The massive central processing node */
+        .core-node {
+            position: absolute;
+            width: 20vh;
+            height: 20vh;
+            background: radial-gradient(circle at 30% 30%, #1e3a8a, #0f172a);
+            border: 2px solid rgba(59, 130, 246, 0.4);
+            border-radius: 50%;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 40px rgba(59, 130, 246, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.1);
+            pointer-events: none;
+        }
+
+        .core-label {
+            color: #ffffff;
+            font-weight: 900;
+            font-size: 1.5rem;
+            letter-spacing: 0.1em;
+        }
+
+        .core-sub {
+            color: #3b82f6;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            margin-top: 4px;
+        }
+
+        /* The draggable child node */
+        .child-node {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: #ffffff;
+            border-radius: 50%;
+            z-index: 3;
+            cursor: grab;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            /* Centering trick so our math aligns perfectly with the mouse */
+            top: 0;
+            left: 0;
+            margin-top: -30px;
+            margin-left: -30px;
+            will-change: transform;
+        }
+
+        .child-node:active {
+            cursor: grabbing;
+            transform: scale(0.95);
+        }
+
+        /* UI Readout */
+        .dashboard {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            z-index: 10;
+        }
+
+        .dashboard h1 {
+            font-size: 3vw;
+            font-weight: 900;
+            color: #ffffff;
+            margin: 0;
+            letter-spacing: -0.02em;
+        }
+
+        .dashboard p {
+            font-family: 'Space Mono', monospace;
+            color: #888888;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin: 8px 0 0 0;
+        }
+    </style>
+</head>
+<body>
+
+    <svg id="tetherCanvas">
+        <path class="tether-line" id="tether"></path>
+    </svg>
+
+    <div class="core-node" id="core">
+        <span class="core-label">PHI-3</span>
+        <span class="core-sub">LOCAL_AGENT</span>
+    </div>
+
+    <div class="child-node" id="dragger">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+        </svg>
+    </div>
+
+    <div class="dashboard">
+        <h1>Elastic Input Node</h1>
+        <p>Drag the node to visualize spring physics</p>
+    </div>
+
+    <script>
+        const dragger = document.getElementById('dragger');
+        const tether = document.getElementById('tether');
+        
+        // Exact center of the screen (the core node)
+        let cx = window.innerWidth / 2;
+        let cy = window.innerHeight / 2;
+
+        window.addEventListener('resize', () => {
+            cx = window.innerWidth / 2;
+            cy = window.innerHeight / 2;
+        });
+
+        // State Variables
+        let isDragging = false;
+        
+        // Target Coordinates (Where the node wants to be)
+        // We set the resting position 250px to the right of the center core
+        let targetX = cx + 250;
+        let targetY = cy;
+
+        // Current Coordinates (Where the node actually is)
+        let currentX = targetX;
+        let currentY = targetY;
+
+        // Velocity (How fast the node is moving)
+        let velX = 0;
+        let velY = 0;
+
+        // Spring Physics Configuration
+        // Tension: How powerfully it snaps back (higher = tighter spring)
+        const tension = 0.08; 
+        // Friction: How quickly it settles (lower = more bouncy, higher = sticky)
+        const friction = 0.82; 
+
+        // Mouse Events
+        dragger.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            // Instantly snap the target to the mouse when clicked
+            targetX = e.clientX;
+            targetY = e.clientY;
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                targetX = e.clientX;
+                targetY = e.clientY;
+            }
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+            // When released, the target snaps back to its resting orbit
+            targetX = cx + 250;
+            targetY = cy;
+        });
+
+        // The Spring Physics Engine
+        function animate() {
+            if (isDragging) {
+                // If dragging, we use standard Lerp for a tight, buttery drag
+                currentX += (targetX - currentX) * 0.2;
+                currentY += (targetY - currentY) * 0.2;
+                // Reset velocity so it doesn't violently snap when we let go
+                velX = 0;
+                velY = 0;
+            } else {
+                // THE MAGIC: True Spring Physics
+                // 1. Calculate the distance between current and target
+                const dx = targetX - currentX;
+                const dy = targetY - currentY;
+
+                // 2. Multiply distance by tension to calculate the pulling Force
+                const forceX = dx * tension;
+                const forceY = dy * tension;
+
+                // 3. Add Force to Velocity
+                velX += forceX;
+                velY += forceY;
+
+                // 4. Apply Friction so the bouncing eventually stops
+                velX *= friction;
+                velY *= friction;
+
+                // 5. Add final Velocity to Current Coordinates
+                currentX += velX;
+                currentY += velY;
+            }
+
+            // Apply the math to the draggable HTML DOM element
+            dragger.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+
+            // Update the SVG Tether Line
+            // We draw a path from the Center Core (cx, cy) to the Child Node (currentX, currentY)
+            tether.setAttribute('d', `M ${cx} ${cy} L ${currentX} ${currentY}`);
+
+            // Loop forever
+            requestAnimationFrame(animate);
+        }
+
+        // Start the engine
+        animate();
+    </script>
+</body>
+</html>
