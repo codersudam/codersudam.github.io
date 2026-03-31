@@ -7,10 +7,12 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     
     <style>
-        /* Tech-Blue Cafe Variables */
         :root {
             --bg-base: #f0f4f8; 
             --glass-panel: rgba(255, 255, 255, 0.45);
@@ -21,7 +23,6 @@
             --border-glass: rgba(255, 255, 255, 0.7);
             --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
             --code-bg: #1e293b;
-            --code-text: #e2e8f0;
         }
 
         * {
@@ -38,7 +39,6 @@
             line-height: 1.6;
         }
 
-        /* Glass Header */
         header {
             position: sticky;
             top: 20px;
@@ -81,14 +81,12 @@
 
         .back-btn:hover { color: var(--accent-main); }
 
-        /* Main Content Container */
         .container {
             max-width: 1000px;
             margin: 40px auto;
             padding: 0 5%;
         }
 
-        /* Video Section */
         .video-container {
             background: var(--glass-panel);
             backdrop-filter: blur(16px);
@@ -101,7 +99,7 @@
 
         .video-wrapper {
             position: relative;
-            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            padding-bottom: 56.25%; 
             height: 0;
             overflow: hidden;
             border-radius: 16px;
@@ -115,23 +113,11 @@
             border: none;
         }
 
-        .tutorial-header {
-            margin-top: 24px;
-        }
+        .tutorial-header { margin-top: 24px; }
+        .tutorial-title { font-size: 2rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px; }
+        .tutorial-desc { color: var(--text-muted); font-size: 1.1rem; }
 
-        .tutorial-title {
-            font-size: 2rem;
-            font-weight: 800;
-            letter-spacing: -1px;
-            margin-bottom: 8px;
-        }
-
-        .tutorial-desc {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-        }
-
-        /* Tabbed Code System */
+        /* Workspace & Tabs */
         .code-workspace {
             background: var(--glass-panel);
             backdrop-filter: blur(16px);
@@ -139,13 +125,21 @@
             border-radius: 24px;
             overflow: hidden;
             box-shadow: var(--shadow-glass);
+            display: flex;
+            flex-direction: column;
         }
 
         .tabs {
             display: flex;
+            justify-content: space-between;
+            align-items: center;
             background: rgba(255, 255, 255, 0.5);
             border-bottom: 1px solid var(--border-glass);
-            overflow-x: auto; /* Responsive scrolling for tabs */
+            padding-right: 16px;
+        }
+
+        .tab-links {
+            display: flex;
         }
 
         .tab-btn {
@@ -166,82 +160,173 @@
             border-bottom: 3px solid var(--accent-main);
         }
 
-        .tab-content {
-            display: none;
-            padding: 0; /* Removing padding so the code block fills the space */
+        /* Workspace Action Bar */
+        .action-bar {
+            display: flex;
+            gap: 8px;
         }
 
-        .tab-content.active {
-            display: block;
-        }
-
-        /* Code Styling with JetBrains Mono */
-        pre {
-            margin: 0;
-            padding: 24px;
-            background: var(--code-bg);
-            color: var(--code-text);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.95rem;
-            overflow-x: auto;
-            border-radius: 0 0 24px 24px;
-        }
-
-        /* Live Preview Styling */
-        .preview-pane {
-            padding: 40px;
-            background: #fff;
-            min-height: 300px;
+        .icon-btn {
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            width: 36px;
+            height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 0 0 24px 24px;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
         }
 
-        /* Responsive Adjustments */
+        .icon-btn:hover {
+            color: var(--accent-main);
+            background: rgba(255, 255, 255, 0.8);
+            transform: scale(1.05);
+        }
+
+        /* Critical Fix: min-height: 0 prevents flex children from blowing past 100vh */
+        .tab-content { display: none; padding: 0; flex-grow: 1; min-height: 0; }
+        .tab-content.active { display: flex; flex-direction: column; height: 100%; }
+
+        /* Code & Preview Rendering */
+        pre[class*="language-"],
+        code[class*="language-"],
+        code[class*="language-"] * {
+            font-family: 'JetBrains Mono', monospace !important;
+            font-size: 0.95rem !important;
+        }
+
+        pre[class*="language-"] {
+            margin: 0 !important;
+            padding: 24px !important;
+            border-radius: 0 0 24px 24px !important;
+            background: var(--code-bg) !important;
+            min-height: 400px;
+            flex-grow: 1;
+            overflow: auto !important; /* Enables scrolling */
+        }
+
+        /* Custom Dark Scrollbar for Code View */
+        pre[class*="language-"]::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        pre[class*="language-"]::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 0 0 24px 0;
+        }
+        pre[class*="language-"]::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 5px;
+        }
+        pre[class*="language-"]::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .preview-pane {
+            padding: 0; 
+            background: #fff;
+            min-height: 400px;
+            display: flex;
+            flex-grow: 1;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0 0 24px 24px;
+            overflow: hidden; 
+        }
+
+        /* Fullscreen Layout Styles */
+        :fullscreen { background: var(--bg-base); }
+        .code-workspace:fullscreen {
+            border-radius: 0;
+            width: 100vw;
+            height: 100vh;
+        }
+        .code-workspace:fullscreen pre[class*="language-"] {
+            border-radius: 0 !important;
+            padding: 40px !important; /* Extra breathing room in fullscreen */
+        }
+        .code-workspace:fullscreen pre[class*="language-"]::-webkit-scrollbar-track {
+            border-radius: 0;
+        }
+        .code-workspace:fullscreen .preview-pane {
+            border-radius: 0 !important;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #10b981;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            z-index: 9999;
+            pointer-events: none;
+        }
+
         @media (max-width: 640px) {
             header { width: 95%; padding: 12px 20px; top: 12px; }
             .tutorial-title { font-size: 1.5rem; }
             .tab-btn { padding: 12px 16px; font-size: 0.85rem; }
             .video-container { padding: 16px; border-radius: 16px; }
+            .preview-pane { min-height: 300px; padding: 0; }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <a href="index.html" class="brand-logo">
-            Sudam's Code Cafe
-        </a>
-        <a href="index.html" class="back-btn">
-            &larr; Back to Studio
-        </a>
+        <a href="index.html" class="brand-logo">Sudam's Code Cafe</a>
+        <a href="index.html" class="back-btn">&larr; Back to Studio</a>
     </header>
 
     <main class="container" id="tutorial-content">
         <p style="text-align: center; padding: 40px; color: var(--text-muted);">Brewing tutorial data...</p>
     </main>
 
+    <div id="toast" class="toast">Action Successful</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+
     <script>
-        // 1. Get the Tutorial ID from the URL (e.g., tutorial.html?id=liquid-physics-hover)
         const urlParams = new URLSearchParams(window.location.search);
         const tutorialId = urlParams.get('id');
 
+        window.currentHtmlCode = "";
+
         async function loadSingleTutorial() {
             try {
-                // 2. Fetch the JSON data
                 const response = await fetch('./data/tutorials.json');
                 const tutorials = await response.json();
-
-                // 3. Find the specific tutorial by ID
                 const tutorial = tutorials.find(t => t.id === tutorialId);
 
                 if (!tutorial) {
-                    document.getElementById('tutorial-content').innerHTML = `<h2>Tutorial not found.</h2><a href="index.html">Go back</a>`;
+                    document.getElementById('tutorial-content').innerHTML = '<h2>Tutorial not found.</h2><a href="index.html">Go back</a>';
                     return;
                 }
 
-                // 4. Inject the HTML into the page
+                let htmlCode = "\n";
+
+                try {
+                    const res = await fetch('./codes/' + tutorial.id + '/index.html');
+                    if (res.ok) {
+                        htmlCode = await res.text();
+                    }
+                } catch (fetchError) {
+                    console.warn("Code file not found yet. Showing placeholder.");
+                }
+
+                window.currentHtmlCode = htmlCode;
+
                 document.getElementById('tutorial-content').innerHTML = `
                     <div class="video-container">
                         <div class="video-wrapper">
@@ -258,86 +343,117 @@
                         </div>
                     </div>
 
-                    <div class="code-workspace">
+                    <div class="code-workspace" id="workspace">
                         <div class="tabs">
-                            <button class="tab-btn active" onclick="switchTab(event, 'preview')">Live Preview</button>
-                            <button class="tab-btn" onclick="switchTab(event, 'html')">index.html</button>
-                            <button class="tab-btn" onclick="switchTab(event, 'css')">style.css</button>
-                            <button class="tab-btn" onclick="switchTab(event, 'js')">script.js</button>
+                            <div class="tab-links">
+                                <button class="tab-btn active" onclick="switchTab(event, 'preview')">Live Preview</button>
+                                <button class="tab-btn" onclick="switchTab(event, 'code')">Code</button>
+                            </div>
+                            <div class="action-bar">
+                                <button class="icon-btn" onclick="copyCode()" title="Copy Code">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                </button>
+                                <button class="icon-btn" onclick="shareTutorial('${tutorial.youtubeVideoId}')" title="Share Tutorial">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                                </button>
+                                <button class="icon-btn" onclick="toggleFullscreen('workspace')" title="Full Screen Workspace">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+                                </button>
+                            </div>
                         </div>
 
                         <div id="preview" class="tab-content active">
                             <div class="preview-pane">
-                                <iframe id="preview-frame" style="width: 100%; height: 300px; border: none;"></iframe>
+                                <iframe id="preview-frame" style="width: 100%; height: 100%; min-height: 400px; border: none;"></iframe>
                             </div>
                         </div>
 
-                        <div id="html" class="tab-content">
-                            <pre><code>${escapeHTML(tutorial.codeSnippets.html)}</code></pre>
-                        </div>
-
-                        <div id="css" class="tab-content">
-                            <pre><code>${escapeHTML(tutorial.codeSnippets.css)}</code></pre>
-                        </div>
-
-                        <div id="js" class="tab-content">
-                            <pre><code>${escapeHTML(tutorial.codeSnippets.js)}</code></pre>
+                        <div id="code" class="tab-content">
+                            <pre><code class="language-markup">${escapeHTML(htmlCode)}</code></pre>
                         </div>
                     </div>
                 `;
 
-                // 5. Build the Live Preview iframe content dynamically!
+                if (window.Prism) { Prism.highlightAll(); }
+
                 const previewFrame = document.getElementById('preview-frame');
-                const previewDoc = previewFrame.contentDocument || previewFrame.contentWindow.document;
+                const doc = previewFrame.contentDocument || previewFrame.contentWindow.document;
                 
-                const combinedCode = `
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <style>${tutorial.codeSnippets.css}</style>
-                    </head>
-                    <body style="display:flex; justify-content:center; align-items:center; height:100vh; margin:0; background:#f0f4f8;">
-                        ${tutorial.codeSnippets.html}
-                        <script>${tutorial.codeSnippets.js}<\/script>
-                    </body>
-                    </html>
-                `;
-                
-                previewDoc.open();
-                previewDoc.write(combinedCode);
-                previewDoc.close();
+                doc.open();
+                doc.write(htmlCode);
+                doc.close();
 
             } catch (error) {
-                console.error("Error loading tutorial:", error);
-                document.getElementById('tutorial-content').innerHTML = '<p>Error loading tutorial data.</p>';
+                console.error("Critical Error:", error);
+                document.getElementById('tutorial-content').innerHTML = '<p>Something went wrong loading the UI.</p>';
             }
         }
 
-        // Tab Switching Logic
+        window.showToast = function(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.style.transform = 'translateY(0)';
+            toast.style.opacity = '1';
+            setTimeout(() => {
+                toast.style.transform = 'translateY(100px)';
+                toast.style.opacity = '0';
+            }, 3000);
+        };
+
+        window.copyCode = async function() {
+            try {
+                await navigator.clipboard.writeText(window.currentHtmlCode);
+                window.showToast('Code copied to clipboard!');
+            } catch (err) {
+                console.error('Failed to copy code', err);
+            }
+        };
+
+        window.shareTutorial = async function(videoId) {
+            const ytLink = `https://youtu.be/${videoId}`;
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: "Sudam's Code Cafe Tutorial",
+                        url: ytLink
+                    });
+                } catch (err) {
+                    console.error('Share failed', err);
+                }
+            } else {
+                await navigator.clipboard.writeText(ytLink);
+                window.showToast('YouTube link copied to clipboard!');
+            }
+        };
+
+        window.toggleFullscreen = function(elementId) {
+            const elem = document.getElementById(elementId);
+            if (!document.fullscreenElement) {
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen().catch(err => {
+                        console.error(`Error attempting to enable fullscreen: ${err.message}`);
+                    });
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        };
+
         function switchTab(event, tabId) {
-            // Remove active class from all buttons and contents
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-
-            // Add active class to clicked button and target content
             event.currentTarget.classList.add('active');
             document.getElementById(tabId).classList.add('active');
         }
 
-        // HTML Escaping Helper
         function escapeHTML(str) {
             return str.replace(/[&<>'"]/g, 
-                tag => ({
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    "'": '&#39;',
-                    '"': '&quot;'
-                }[tag] || tag)
+                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
             );
         }
 
-        // Initialize the page
         loadSingleTutorial();
     </script>
 </body>
