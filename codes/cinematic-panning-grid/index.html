@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinematic Panning Grid</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <style>
+        /* Full viewport foundation - NO zooming required! */
+        body {
+            margin: 0;
+            height: 100vh;
+            width: 100vw;
+            background-color: #030305; /* Deep abyss black */
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* The giant container that holds all the cards. 
+           We make it much larger than the screen so we can pan around it. */
+        .grid-container {
+            position: absolute;
+            display: grid;
+            grid-template-columns: repeat(5, 400px);
+            grid-template-rows: repeat(5, 300px);
+            gap: 32px;
+            /* Center the massive grid initially */
+            left: 50%;
+            top: 50%;
+            /* Will be manipulated by JS for the panning effect */
+            transform: translate(-50%, -50%);
+            will-change: transform;
+            cursor: grab;
+        }
+
+        .grid-container:active {
+            cursor: grabbing;
+        }
+
+        /* Premium Glassmorphism Cards */
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            
+            /* Hardware acceleration for the scale, blur, and opacity changes */
+            will-change: transform, filter, opacity;
+        }
+
+        .card i {
+            font-size: 48px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 16px;
+        }
+
+        .card h3 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .card p {
+            margin: 8px 0 0 0;
+            font-size: 0.9rem;
+            color: #888888;
+        }
+
+        /* Overlay text to anchor the UI */
+        .ui-overlay {
+            position: absolute;
+            bottom: 40px;
+            text-align: center;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .ui-overlay h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #ffffff;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .ui-overlay p {
+            margin: 8px 0 0 0;
+            color: #a1a1aa;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="grid-container" id="grid">
+        </div>
+
+    <div class="ui-overlay">
+        <h1>Focus Grid</h1>
+        <p>Move your cursor to pan the camera and shift the depth of field.</p>
+    </div>
+
+    <script>
+        const grid = document.getElementById('grid');
+        const cards = [];
+        
+        // 1. Generate 25 cards dynamically
+        const icons = ["ph-cube", "ph-aperture", "ph-atom", "ph-hexagon", "ph-infinity"];
+        
+        for (let i = 0; i < 25; i++) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            
+            // Pick a random icon for visual variety
+            const randomIcon = icons[Math.floor(Math.random() * icons.length)];
+            
+            card.innerHTML = `
+                <i class="ph ${randomIcon}"></i>
+                <h3>Module ${i + 1}</h3>
+                <p>System Component</p>
+            `;
+            grid.appendChild(card);
+            cards.push(card);
+        }
+
+        // Panning Configuration
+        const panRangeX = 400; // Max pixels the grid will pan horizontally
+        const panRangeY = 300; // Max pixels the grid will pan vertically
+        
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        
+        // Lerp Variables for the grid container
+        let targetPanX = 0;
+        let targetPanY = 0;
+        let currentPanX = 0;
+        let currentPanY = 0;
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+
+            // Map the mouse position (0 to 1) to our pan range (-0.5 to 0.5)
+            // We multiply by -1 so the grid moves OPPOSITE to the mouse, like a camera
+            const percentX = (mouseX / window.innerWidth) - 0.5;
+            const percentY = (mouseY / window.innerHeight) - 0.5;
+
+            targetPanX = percentX * -panRangeX;
+            targetPanY = percentY * -panRangeY;
+        });
+
+        // 2. The Animation & Physics Engine
+        function animate() {
+            // Lerp the master grid container for buttery smooth panning
+            currentPanX += (targetPanX - currentPanX) * 0.05;
+            currentPanY += (targetPanY - currentPanY) * 0.05;
+
+            // Apply the pan. We keep the base -50% translation to keep it centered!
+            grid.style.transform = `translate(calc(-50% + ${currentPanX}px), calc(-50% + ${currentPanY}px))`;
+
+            // Screen center coordinates for the "Focus Lens" effect
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            const maxDistance = Math.sqrt(centerX * centerX + centerY * centerY);
+
+            // Iterate through every card to calculate its depth of field
+            cards.forEach(card => {
+                // Get the exact current pixel coordinates of the card
+                const rect = card.getBoundingClientRect();
+                const cardCenterX = rect.left + rect.width / 2;
+                const cardCenterY = rect.top + rect.height / 2;
+
+                // Calculate distance from the card's center to the SCREEN'S center
+                const dx = centerX - cardCenterX;
+                const dy = centerY - cardCenterY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                // Convert distance to a normalized value (0 is dead center, 1 is edge of screen)
+                const progress = Math.min(distance / (maxDistance * 0.8), 1);
+
+                // Map the progress to our optical physics
+                const blur = progress * 12; // Edges blur up to 12px
+                const scale = 1 - (progress * 0.15); // Edges shrink down to 85% scale
+                const opacity = 1 - (progress * 0.6); // Edges fade out to 40% opacity
+
+                // Apply the calculated lens physics to the individual card
+                card.style.filter = `blur(${blur}px)`;
+                card.style.transform = `scale(${scale})`;
+                card.style.opacity = opacity;
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
