@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotlight Reveal Card</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Minimalist Dark Mode Foundation */
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #000000; /* Pure black for maximum contrast */
+            font-family: 'Inter', sans-serif;
+            color: #ededed;
+        }
+
+        /* The wrapper handles the glowing border effect.
+           We use CSS variables that will be updated by JS.
+        */
+        .card-wrapper {
+            position: relative;
+            width: 320px;
+            height: 400px;
+            background-color: rgba(255, 255, 255, 0.05); /* Base subtle border */
+            border-radius: 16px;
+            overflow: hidden;
+            /* Default mouse positions off-screen before hover */
+            --mouse-x: -500px;
+            --mouse-y: -500px;
+        }
+
+        /* The actual spotlight gradient for the BORDER.
+           It lives behind the main content layer.
+        */
+        .card-wrapper::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(
+                250px circle at var(--mouse-x) var(--mouse-y), 
+                rgba(255, 255, 255, 0.4), 
+                transparent 40%
+            );
+            z-index: 1;
+            transition: opacity 0.3s ease;
+            opacity: 0; /* Hidden until hovered */
+        }
+
+        .card-wrapper:hover::before {
+            opacity: 1;
+        }
+
+        /* The main content area.
+           Notice the `inset: 1px`. This creates the 1px border by 
+           letting the glowing wrapper peek through.
+        */
+        .card-content {
+            position: absolute;
+            inset: 1px; /* The secret to the 1px gradient border */
+            background-color: #0a0a0a; /* Deep gray card face */
+            border-radius: 15px;
+            z-index: 2;
+            padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* The inner spotlight glow on the card face itself.
+        */
+        .card-content::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(
+                300px circle at var(--mouse-x) var(--mouse-y), 
+                rgba(255, 255, 255, 0.04), 
+                transparent 40%
+            );
+            z-index: 3;
+            border-radius: inherit;
+            pointer-events: none; /* Allows text selection underneath */
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card-wrapper:hover .card-content::before {
+            opacity: 1;
+        }
+
+        /* Clean Typography & Layout inside the card */
+        .card-content svg {
+            width: 40px;
+            height: 40px;
+            color: #ffffff;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 4;
+        }
+
+        .card-content h2 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            position: relative;
+            z-index: 4;
+        }
+
+        .card-content p {
+            margin: 0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #a1a1aa; /* Muted text */
+            position: relative;
+            z-index: 4;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card-wrapper" id="spotlightCard">
+        <div class="card-content">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+            </svg>
+            <h2>Lightning Fast</h2>
+            <p>Our infrastructure is designed for extreme low-latency. Built on the edge, delivered instantly to your users around the globe.</p>
+        </div>
+    </div>
+
+    <script>
+        const card = document.getElementById('spotlightCard');
+
+        // Track the mouse position relative to the card wrapper
+        card.addEventListener('mousemove', (e) => {
+            // Get the bounding rectangle of the card
+            const rect = card.getBoundingClientRect();
+            
+            // Calculate mouse X and Y relative to the top-left of the card
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            // Update the CSS variables dynamically
+            card.style.setProperty('--mouse-x', `${x}px`);
+            card.style.setProperty('--mouse-y', `${y}px`);
+        });
+    </script>
+</body>
+</html>
