@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X-Ray Cursor Reveal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <style>
+        /* Full viewport foundation - NO zooming required! */
+        body {
+            margin: 0;
+            height: 100vh;
+            width: 100vw;
+            background-color: #050505; /* Deep space black */
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            /* Default custom properties for the cursor position */
+            --x: 50vw;
+            --y: 50vh;
+        }
+
+        /* Shared layout for both layers to perfectly overlap */
+        .layer {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Giant Viewport Typography */
+        h1 {
+            font-size: 16vw; /* Scales massively with the window */
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -0.05em;
+            margin: 0;
+            line-height: 0.9;
+        }
+
+        p {
+            font-size: 1.5rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-top: 16px;
+        }
+
+        /* =========================================
+           LAYER 1: The Base (Outline/Wireframe)
+           ========================================= */
+        .base-layer {
+            background-color: #050505;
+            z-index: 1;
+        }
+
+        .base-layer h1 {
+            /* The wireframe text trick */
+            color: transparent;
+            -webkit-text-stroke: 2px rgba(255, 255, 255, 0.15);
+        }
+
+        .base-layer p {
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+
+        /* =========================================
+           LAYER 2: The Masked Reveal (Vibrant)
+           ========================================= */
+        .reveal-layer {
+            /* A vibrant, high-end gradient background */
+            background: linear-gradient(135deg, #FF007A 0%, #7928CA 100%);
+            z-index: 2;
+            pointer-events: none; /* Lets the mouse interact with the page */
+            
+            /* THE MAGIC: CSS Masking
+               We use a radial gradient that is solid black in the center (visible) 
+               and fades to transparent (invisible) at the edges. 
+               The 'at' coordinates are driven dynamically by our JavaScript!
+            */
+            -webkit-mask-image: radial-gradient(
+                circle 350px at var(--x) var(--y), 
+                black 40%, 
+                transparent 100%
+            );
+            mask-image: radial-gradient(
+                circle 350px at var(--x) var(--y), 
+                black 40%, 
+                transparent 100%
+            );
+        }
+
+        /* Inside the reveal layer, text is solid and white */
+        .reveal-layer h1 {
+            color: #ffffff;
+            /* Drop shadow creates depth inside the flashlight */
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .reveal-layer p {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Minimalist icon positioned at the bottom */
+        .icon-wrapper {
+            position: absolute;
+            bottom: 40px;
+            font-size: 32px;
+        }
+
+        .base-layer .icon-wrapper { color: rgba(255, 255, 255, 0.15); }
+        .reveal-layer .icon-wrapper { color: #ffffff; }
+
+    </style>
+</head>
+<body>
+
+    <div class="layer base-layer">
+        <h1>OBSERVE</h1>
+        <p>Look Closer</p>
+        <div class="icon-wrapper"><i class="ph ph-eye"></i></div>
+    </div>
+
+    <div class="layer reveal-layer">
+        <h1>OBSERVE</h1>
+        <p>Look Closer</p>
+        <div class="icon-wrapper"><i class="ph ph-eye"></i></div>
+    </div>
+
+    <script>
+        // Start coordinates in the center of the screen
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+
+        // Current coordinates of the mask
+        let maskX = mouseX;
+        let maskY = mouseY;
+
+        // Track the raw mouse position
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        // The Physics Animation Loop
+        function animate() {
+            // Lerp (Linear Interpolation) Formula: 
+            // current += (target - current) * friction
+            // 0.1 creates a heavy, buttery-smooth lag effect behind the cursor
+            maskX += (mouseX - maskX) * 0.1;
+            maskY += (mouseY - maskY) * 0.1;
+
+            // Inject the smooth coordinates into our CSS variables
+            document.body.style.setProperty('--x', `${maskX}px`);
+            document.body.style.setProperty('--y', `${maskY}px`);
+
+            // Loop forever
+            requestAnimationFrame(animate);
+        }
+
+        // Start the engine
+        animate();
+    </script>
+</body>
+</html>
