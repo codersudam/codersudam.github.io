@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Fluid Flow Sensor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Full viewport foundation - NO zooming required! */
+        body {
+            margin: 0;
+            height: 100vh;
+            width: 100vw;
+            background-color: #020205; /* Deep industrial black */
+            font-family: 'Space Mono', monospace;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            -webkit-font-smoothing: antialiased;
+            cursor: ew-resize; /* Horizontal resize cursor to imply valve control */
+        }
+
+        /* The HTML5 Canvas for high-performance fluid rendering */
+        #flowCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Massive Overlay UI */
+        .dashboard {
+            position: absolute;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            pointer-events: none; /* Let the mouse control the canvas behind */
+        }
+
+        /* The Brand Header */
+        .dashboard h1 {
+            font-family: 'Inter', sans-serif;
+            font-size: 14vw;
+            font-weight: 900;
+            color: #ffffff;
+            margin: 0;
+            line-height: 0.85;
+            letter-spacing: -0.04em;
+            text-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Subtitle */
+        .dashboard h2 {
+            font-size: 1.5rem;
+            color: #00d2ff; /* Cyan fluid color */
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            margin: 16px 0 0 0;
+            text-shadow: 0 0 20px rgba(0, 210, 255, 0.5);
+        }
+
+        /* Technical Readouts */
+        .metrics {
+            display: flex;
+            gap: 40px;
+            margin-top: 48px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 24px 48px;
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .metric-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 8px;
+        }
+
+        .value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            font-variant-numeric: tabular-nums; /* Prevents layout jitter */
+        }
+
+        .unit {
+            font-size: 1rem;
+            color: #00d2ff;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="flowCanvas"></canvas>
+
+    <div class="dashboard">
+        <h1>AUTREX</h1>
+        <h2>Instrumentation & Control</h2>
+        
+        <div class="metrics">
+            <div class="metric-group">
+                <span class="label">Valve Position</span>
+                <span class="value"><span id="valveOut">50</span><span class="unit">%</span></span>
+            </div>
+            <div class="metric-group">
+                <span class="label">Flow Rate</span>
+                <span class="value"><span id="flowOut">120</span><span class="unit"> L/m</span></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('flowCanvas');
+        const ctx = canvas.getContext('2d');
+        const valveOut = document.getElementById('valveOut');
+        const flowOut = document.getElementById('flowOut');
+
+        // Dynamically size canvas
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // Control Variables (Driven by mouse X)
+        let targetValve = 0.5; // 0 to 1
+        let currentValve = 0.5;
+
+        // Map mouse X to the "Valve Opening" percentage
+        window.addEventListener('mousemove', (e) => {
+            targetValve = e.clientX / window.innerWidth;
+            // Clamp between 0.05 (almost closed) and 1 (fully open)
+            targetValve = Math.max(0.05, Math.min(1, targetValve));
+        });
+
+        // 1. Fluid Particle Class
+        class FluidParticle {
+            constructor() {
+                this.reset(true);
+            }
+
+            // Resets the particle to the left side of the screen
+            reset(randomX = false) {
+                // If randomX is true, scatter them across the screen initially
+                this.x = randomX ? Math.random() * canvas.width : -10;
+                
+                // Focus particles in the vertical center to simulate a "pipe"
+                const centerY = canvas.height / 2;
+                // The pipe width expands slightly as the valve opens
+                const pipeSpread = 100 + (currentValve * 200); 
+                this.y = centerY + (Math.random() - 0.5) * pipeSpread;
+
+                // Speed and size
+                this.baseSpeed = Math.random() * 2 + 1;
+                this.radius = Math.random() * 3 + 1;
+                
+                // Opacity fades out slightly at the edges
+                this.alpha = Math.random() * 0.5 + 0.2;
+            }
+
+            update() {
+                // Velocity is directly multiplied by the mechanical valve opening
+                // Max flow rate is incredibly fast, closed valve is a trickle
+                const speedMultiplier = currentValve * 25;
+                this.x += this.baseSpeed * speedMultiplier;
+
+                // Add slight vertical turbulence based on speed
+                this.y += (Math.random() - 0.5) * (currentValve * 4);
+
+                // If it goes off the right edge, recycle it back to the left
+                if (this.x > canvas.width) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                // Glowing cyan fluid
+                ctx.fillStyle = `rgba(0, 210, 255, ${this.alpha})`;
+                ctx.fill();
+            }
+        }
+
+        // Generate the fluid volume
+        const particles = [];
+        const particleCount = 600; // High particle count for a dense fluid look
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new FluidParticle());
+        }
+
+        // 2. The Animation & Physics Loop
+        function animate() {
+            // Lerp the mechanical valve for a heavy, realistic delay
+            currentValve += (targetValve - currentValve) * 0.05;
+
+            // Clear the canvas with a slight trail effect
+            ctx.fillStyle = 'rgba(2, 2, 5, 0.3)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Turn on additive blending for an intense neon glow when particles overlap
+            ctx.globalCompositeOperation = 'lighter';
+
+            // Update and draw fluid
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            // Reset composite operation so the background clears correctly next frame
+            ctx.globalCompositeOperation = 'source-over';
+
+            // 3. Update the Instrumentation UI
+            const valvePercentage = Math.round(currentValve * 100);
+            const flowRate = Math.round((currentValve * 240)); // Max flow 240 L/m
+
+            valveOut.innerText = valvePercentage;
+            flowOut.innerText = flowRate;
+
+            requestAnimationFrame(animate);
+        }
+
+        // Start the engine
+        animate();
+    </script>
+</body>
+</html>
