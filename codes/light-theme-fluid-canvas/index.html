@@ -1,1 +1,286 @@
-<title>light theme fluid canvas</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Light Theme Fluid Canvas UI</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+
+    /* Perfectly aligned and fully responsive light layout */
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f8fafc; /* Soft, light slate background */
+      background-image: radial-gradient(circle at 50% 0%, #ffffff 0%, #f1f5f9 100%);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      padding: 24px;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    #liquidCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: auto;
+    }
+
+    /* Pristine Frosted Glass Card */
+    .glass-card {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 420px;
+      padding: 40px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 
+        0 20px 40px rgba(14, 165, 233, 0.1),
+        0 4px 6px rgba(0, 0, 0, 0.02),
+        inset 0 2px 10px rgba(255, 255, 255, 1);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      pointer-events: none; /* Allows cursor to interact with the water behind it */
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .icon-container {
+      width: 72px;
+      height: 72px;
+      background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+      border-radius: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 25px rgba(14, 165, 233, 0.3);
+      transform: rotate(-5deg);
+    }
+
+    .icon-container svg {
+      width: 36px;
+      height: 36px;
+      fill: none;
+      stroke: #ffffff;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .title {
+      color: #0f172a; /* Dark slate for high contrast */
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin: 0 0 12px 0;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      color: #64748b; /* Medium slate for secondary text */
+      font-size: 1.05rem;
+      line-height: 1.6;
+      font-weight: 400;
+      margin: 0 0 30px 0;
+    }
+
+    .action-badge {
+      padding: 10px 20px;
+      background: #ffffff;
+      border-radius: 100px;
+      color: #0ea5e9;
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(14, 165, 233, 0.1);
+    }
+
+  </style>
+</head>
+<body>
+
+  <canvas id="liquidCanvas"></canvas>
+
+  <div class="glass-card">
+    <div class="icon-container">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+      </svg>
+    </div>
+    <h1 class="title">Crystal Fluid</h1>
+    <p class="subtitle">Experience the upgraded physics engine. Swipe your cursor to create hyper-realistic ripples in this bright, modern layout.</p>
+    <div class="action-badge">Interactive Surface</div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('liquidCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let width, height;
+    let springs = [];
+    const spacing = 8; // Slightly wider spacing for smoother, larger waves
+
+    // Upgraded Spring Physics Constants for a "heavier" water feel
+    const tension = 0.050;
+    const dampening = 0.010;
+    const spread = 0.3;
+
+    let targetHeight;
+    let mouse = { x: 0, y: 0, dy: 0, prevY: 0 };
+
+    class Spring {
+      constructor(x, y) {
+        this.x = x;
+        this.targetHeight = y;
+        this.height = y;
+        this.velocity = 0;
+      }
+
+      update() {
+        let displacement = this.targetHeight - this.height;
+        this.velocity += tension * displacement - this.velocity * dampening;
+        this.height += this.velocity;
+      }
+    }
+
+    function initFluid() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+      
+      // Set water level lower for the light theme aesthetic
+      targetHeight = height * 0.65; 
+      
+      springs = [];
+      const numSprings = Math.ceil(width / spacing) + 1;
+      
+      for (let i = 0; i < numSprings; i++) {
+        springs.push(new Spring(i * spacing, targetHeight));
+      }
+    }
+
+    function drawFluid() {
+      ctx.clearRect(0, 0, width, height);
+
+      // --- Interaction Logic ---
+      let index = Math.floor(mouse.x / spacing);
+      if (index >= 0 && index < springs.length) {
+        let distance = Math.abs(mouse.y - springs[index].height);
+        // Push water if mouse crosses the surface
+        if (distance < 60) {
+          springs[index].velocity += mouse.dy * 1;
+        }
+      }
+      mouse.dy *= 0.8; // Decay velocity
+
+      // --- Physics Update ---
+      for (let i = 0; i < springs.length; i++) {
+        springs[i].update();
+      }
+
+      // Propagate the wave
+      let leftDeltas = new Array(springs.length).fill(0);
+      let rightDeltas = new Array(springs.length).fill(0);
+
+      for (let j = 0; j < 8; j++) {
+        for (let i = 0; i < springs.length; i++) {
+          if (i > 0) {
+            leftDeltas[i] = spread * (springs[i].height - springs[i - 1].height);
+            springs[i - 1].velocity += leftDeltas[i];
+          }
+          if (i < springs.length - 1) {
+            rightDeltas[i] = spread * (springs[i].height - springs[i + 1].height);
+            springs[i + 1].velocity += rightDeltas[i];
+          }
+        }
+        for (let i = 0; i < springs.length; i++) {
+          if (i > 0) springs[i - 1].height += leftDeltas[i];
+          if (i < springs.length - 1) springs[i + 1].height += rightDeltas[i];
+        }
+      }
+
+      // --- Rendering the Light Theme Liquid ---
+      
+      // Beautiful crystal blue gradient
+      let gradient = ctx.createLinearGradient(0, targetHeight - 100, 0, height);
+      gradient.addColorStop(0, 'rgba(56, 189, 248, 0.4)'); // Light sky blue
+      gradient.addColorStop(1, 'rgba(14, 165, 233, 0.8)'); // Deeper cerulean
+
+      ctx.beginPath();
+      ctx.moveTo(0, height);
+      ctx.lineTo(springs[0].x, springs[0].height);
+
+      for (let i = 0; i < springs.length - 1; i++) {
+        let p1 = springs[i];
+        let p2 = springs[i + 1];
+        let cx = (p1.x + p2.x) / 2;
+        let cy = (p1.height + p2.height) / 2;
+        ctx.quadraticCurveTo(p1.x, p1.height, cx, cy);
+      }
+      
+      ctx.lineTo(width, springs[springs.length - 1].height);
+      ctx.lineTo(width, height);
+      ctx.closePath();
+      
+      ctx.fillStyle = gradient;
+      ctx.fill();
+
+      // Top edge crisp highlight
+      ctx.beginPath();
+      ctx.moveTo(springs[0].x, springs[0].height);
+      for (let i = 0; i < springs.length - 1; i++) {
+        let p1 = springs[i];
+        let p2 = springs[i + 1];
+        let cx = (p1.x + p2.x) / 2;
+        let cy = (p1.height + p2.height) / 2;
+        ctx.quadraticCurveTo(p1.x, p1.height, cx, cy);
+      }
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+      ctx.stroke();
+
+      requestAnimationFrame(drawFluid);
+    }
+
+    // --- Event Listeners ---
+    window.addEventListener('resize', initFluid);
+
+    window.addEventListener('mousemove', (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+      mouse.dy = mouse.y - mouse.prevY;
+      mouse.prevY = mouse.y;
+    });
+
+    window.addEventListener('touchmove', (e) => {
+      mouse.x = e.touches[0].clientX;
+      mouse.y = e.touches[0].clientY;
+      mouse.dy = mouse.y - mouse.prevY;
+      mouse.prevY = mouse.y;
+    });
+
+    // Idle splashes
+    setInterval(() => {
+        if(Math.abs(mouse.dy) < 1) {
+            let randomIndex = Math.floor(Math.random() * springs.length);
+            springs[randomIndex].velocity -= Math.random() * 25 + 15;
+        }
+    }, 2500);
+
+    initFluid();
+    drawFluid();
+  </script>
+
+</body>
+</html>
