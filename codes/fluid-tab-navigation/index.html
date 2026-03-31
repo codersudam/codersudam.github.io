@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fluid Tab Navigation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Minimalist Foundation */
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #fafafa; /* Ultra-clean off-white */
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Container for the segmented control */
+        .nav-container {
+            position: relative;
+            display: flex;
+            padding: 6px;
+            background-color: #efefef; /* Subtle inset background */
+            border-radius: 100px; /* Pill shape */
+        }
+
+        /* Individual Tab Styling */
+        .tab {
+            position: relative;
+            z-index: 2; /* Keeps text layered above the sliding indicator */
+            padding: 12px 28px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #71717a; /* Muted gray for inactive state */
+            cursor: pointer;
+            transition: color 0.3s ease;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* High-contrast active state */
+        .tab.active {
+            color: #09090b; /* Pure black */
+        }
+
+        /* The Sliding Pill Indicator */
+        .indicator {
+            position: absolute;
+            top: 6px;
+            left: 0; 
+            height: calc(100% - 12px);
+            background-color: #ffffff;
+            border-radius: 100px;
+            /* Extremely subtle elevation */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+            z-index: 1;
+            /* The magic curve for that premium Apple/Vercel feel */
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), 
+                        width 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="nav-container">
+        <div class="indicator" id="indicator"></div>
+        
+        <div class="tab active" onclick="setActive(this)">Overview</div>
+        <div class="tab" onclick="setActive(this)">Integrations</div>
+        <div class="tab" onclick="setActive(this)">Billing</div>
+        <div class="tab" onclick="setActive(this)">Settings</div>
+    </nav>
+
+    <script>
+        const indicator = document.getElementById('indicator');
+        const tabs = document.querySelectorAll('.tab');
+
+        // Initialize the indicator's starting position and width
+        function init() {
+            const activeTab = document.querySelector('.tab.active');
+            updateIndicator(activeTab);
+        }
+
+        function setActive(clickedTab) {
+            // Remove active state from all tabs
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Add active state to the clicked tab
+            clickedTab.classList.add('active');
+            
+            // Animate the background pill
+            updateIndicator(clickedTab);
+        }
+
+        function updateIndicator(tab) {
+            // Calculate the tab's exact position and width relative to the container
+            const offsetLeft = tab.offsetLeft;
+            const offsetWidth = tab.offsetWidth;
+
+            // Apply dynamic styles to the indicator
+            indicator.style.transform = `translateX(${offsetLeft}px)`;
+            indicator.style.width = `${offsetWidth}px`;
+        }
+
+        // Run calculation on initial load
+        window.addEventListener('DOMContentLoaded', init);
+        
+        // Recalculate on window resize to ensure it doesn't break responsively
+        window.addEventListener('resize', () => {
+            const activeTab = document.querySelector('.tab.active');
+            updateIndicator(activeTab);
+        });
+    </script>
+</body>
+</html>
