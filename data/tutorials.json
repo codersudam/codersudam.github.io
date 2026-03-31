@@ -1,15 +1,274 @@
 [
   {
-    "id": "fluid-canvas-ui",
+    "id": "3d-isometric-grid",
+    "title": "3D Isometric Proximity Grid | Using HTML, CSS, and Vanilla JS",
+    "description": "Learn how to build a dynamic 3D isometric grid that reacts to the mouse cursor's proximity.",
+    "youtubeVideoId": "Bw6EKss9ytk",
+    "thumbnailUrl": "https://i.ytimg.com/vi/Bw6EKss9ytk/maxresdefault.jpg",
+    "tags": ["3D", "Isometric", "Vanilla JS"]
+  },
+  {
+    "id": "light-theme-fluid-canvas",
     "title": "Light Theme Fluid Canvas UI | Using HTML , CSS , Vanilla JS",
-    "description": "An interactive interface reacting to cursor movement with fluid-like properties and advanced mathematical transitions. Built purely with Vanilla JS.",
+    "description": "An interactive interface reacting to cursor movement with fluid-like properties.",
     "youtubeVideoId": "KrHkzWwpS2Q",
     "thumbnailUrl": "https://i.ytimg.com/vi/KrHkzWwpS2Q/maxresdefault.jpg",
-    "tags": ["Vanilla JS", "Physics", "UI"],
-    "codeSnippets": {
-      "html": "<canvas id=\"physics-canvas\"></canvas>",
-      "css": "/* Make sure to set a background color on your body! */\nbody {\n  background-color: #f0f4f8;\n}\n\n#physics-canvas {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100vw;\n  height: 100vh;\n  z-index: -1;\n  pointer-events: none;\n}",
-      "js": "const canvas = document.getElementById('physics-canvas');\nconst ctx = canvas.getContext('2d');\ncanvas.width = window.innerWidth;\ncanvas.height = window.innerHeight;\n\nlet particles = [];\nconst colors = ['#3b82f6', '#60a5fa', '#93c5fd', '#1d4ed8'];\n\nconst mouse = {\n    x: canvas.width / 2,\n    y: canvas.height / 2,\n    radius: 300\n};\n\nwindow.addEventListener('mousemove', (e) => {\n    mouse.x = e.x;\n    mouse.y = e.y;\n});\n\nwindow.addEventListener('resize', () => {\n    canvas.width = window.innerWidth;\n    canvas.height = window.innerHeight;\n    init();\n});\n\nclass Particle {\n    constructor() {\n        this.x = Math.random() * canvas.width;\n        this.y = Math.random() * canvas.height;\n        this.size = Math.random() * 2 + 1;\n        this.color = colors[Math.floor(Math.random() * colors.length)];\n        this.velocity = {\n            x: (Math.random() - 0.5) * 1.5,\n            y: (Math.random() - 0.5) * 1.5\n        };\n    }\n\n    draw() {\n        ctx.beginPath();\n        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);\n        ctx.fillStyle = this.color;\n        ctx.fill();\n    }\n\n    update() {\n        let dx = mouse.x - this.x;\n        let dy = mouse.y - this.y;\n        let distance = Math.sqrt(dx * dx + dy * dy);\n\n        if (distance < mouse.radius) {\n            let force = (mouse.radius - distance) / mouse.radius;\n            let tangentialX = -dy / distance;\n            let tangentialY = dx / distance;\n            let accelerationX = (dx / distance) * force * 0.1;\n            let accelerationY = (dy / distance) * force * 0.1;\n\n            this.velocity.x += accelerationX + tangentialX * force * 0.15;\n            this.velocity.y += accelerationY + tangentialY * force * 0.15;\n        }\n\n        this.velocity.x *= 0.98;\n        this.velocity.y *= 0.98;\n\n        this.x += this.velocity.x;\n        this.y += this.velocity.y;\n\n        if (this.x < 0) this.x = canvas.width;\n        if (this.x > canvas.width) this.x = 0;\n        if (this.y < 0) this.y = canvas.height;\n        if (this.y > canvas.height) this.y = 0;\n\n        this.draw();\n    }\n}\n\nfunction init() {\n    particles = [];\n    let numParticles = Math.floor((canvas.width * canvas.height) / 8000);\n    if (numParticles > 400) numParticles = 400;\n\n    for (let i = 0; i < numParticles; i++) {\n        particles.push(new Particle());\n    }\n}\n\nfunction animate() {\n    requestAnimationFrame(animate);\n    ctx.fillStyle = 'rgba(240, 244, 248, 0.2)';\n    ctx.fillRect(0, 0, canvas.width, canvas.height);\n\n    particles.forEach(particle => {\n        particle.update();\n    });\n}\n\ninit();\nanimate();"
-    }
+    "tags": ["Vanilla JS", "Physics", "UI"]
+  },
+  {
+    "id": "advanced-3d-particle",
+    "title": "Advanced 3D Particle Data Node | Using HTML , CSS , Vanilla JS",
+    "description": "Automated coding and design session. Build a complex 3D particle data node.",
+    "youtubeVideoId": "oOKgCnhQxjA",
+    "thumbnailUrl": "https://i.ytimg.com/vi/oOKgCnhQxjA/maxresdefault.jpg",
+    "tags": ["3D", "Particles", "Vanilla JS"]
+  },
+  {
+    "id": "dynamic-island-micro",
+    "title": "Dynamic Island Micro-Interaction | Using HTML , CSS , Vanilla JS",
+    "description": "Recreate the satisfying bouncy Dynamic Island animation for the web.",
+    "youtubeVideoId": "eaf4EnscQvk",
+    "thumbnailUrl": "https://i.ytimg.com/vi/eaf4EnscQvk/maxresdefault.jpg",
+    "tags": ["Micro-Interaction", "Animation"]
+  },
+  {
+    "id": "spring-physics-data-node",
+    "title": "Spring Physics Data Node | Using HTML , CSS , Vanilla JS",
+    "description": "Mathematical UI interactions using spring physics for data nodes.",
+    "youtubeVideoId": "kX1lGN6vx_U",
+    "thumbnailUrl": "https://i.ytimg.com/vi/kX1lGN6vx_U/maxresdefault.jpg",
+    "tags": ["Physics", "Data Node"]
+  },
+  {
+    "id": "interactive-fluid-flow",
+    "title": "Interactive Fluid Flow Sensor | Using HTML , CSS , Vanilla JS",
+    "description": "Build a highly interactive fluid flow sensor UI.",
+    "youtubeVideoId": "bHUfeWRgzgo",
+    "thumbnailUrl": "https://i.ytimg.com/vi/bHUfeWRgzgo/maxresdefault.jpg",
+    "tags": ["Fluid", "Sensor", "UI"]
+  },
+  {
+    "id": "liquid-mercury-magnetic",
+    "title": "Liquid Mercury Magnetic UI | Using HTML , CSS , Vanilla JS",
+    "description": "Create a liquid metal magnetic UI interaction.",
+    "youtubeVideoId": "mEFS0tzHad0",
+    "thumbnailUrl": "https://i.ytimg.com/vi/mEFS0tzHad0/maxresdefault.jpg",
+    "tags": ["Liquid", "Magnetic"]
+  },
+  {
+    "id": "cinematic-panning-grid",
+    "title": "Cinematic Panning Grid | Using HTML , CSS , Vanilla JS",
+    "description": "Build an immersive cinematic panning grid that smoothly follows interaction.",
+    "youtubeVideoId": "W_weIx5MHSs",
+    "thumbnailUrl": "https://i.ytimg.com/vi/W_weIx5MHSs/maxresdefault.jpg",
+    "tags": ["Cinematic", "Grid"]
+  },
+  {
+    "id": "x-ray-cursor-reveal",
+    "title": "X-Ray Cursor Reveal | Using HTML , CSS , Vanilla JS",
+    "description": "Code the highly requested X-Ray cursor reveal effect.",
+    "youtubeVideoId": "RnPb9yxyc9I",
+    "thumbnailUrl": "https://i.ytimg.com/vi/RnPb9yxyc9I/maxresdefault.jpg",
+    "tags": ["Cursor", "Reveal"]
+  },
+  {
+    "id": "interactive-3d-text",
+    "title": "Interactive 3D Text Extrusion | Advanced Cursor Physics",
+    "description": "Extrude typography into 3D space with cursor-driven physics.",
+    "youtubeVideoId": "evENQ2om5vo",
+    "thumbnailUrl": "https://i.ytimg.com/vi/evENQ2om5vo/maxresdefault.jpg",
+    "tags": ["Typography", "3D"]
+  },
+  {
+    "id": "cinematic-split-text",
+    "title": "Cinematic Split-Text Reveal | CSS Clip-Path & JS Lerp Physics",
+    "description": "Master advanced CSS Clip-Path and Lerp for text reveals.",
+    "youtubeVideoId": "RjtqY6YWxmQ",
+    "thumbnailUrl": "https://i.ytimg.com/vi/RjtqY6YWxmQ/maxresdefault.jpg",
+    "tags": ["Clip-Path", "Lerp"]
+  },
+  {
+    "id": "origin-tracking-liquid",
+    "title": "Origin-Tracking Liquid Card | CSS Blend Modes & Vanilla JS",
+    "description": "Combine CSS Blend Modes with JS tracking for fluid cards.",
+    "youtubeVideoId": "fW-gr9tM3xg",
+    "thumbnailUrl": "https://i.ytimg.com/vi/fW-gr9tM3xg/maxresdefault.jpg",
+    "tags": ["Blend Modes", "Cards"]
+  },
+  {
+    "id": "proximity-lift-dock",
+    "title": "Proximity Lift Dock | Smooth Wave Hover UI",
+    "description": "Recreate the iconic smooth wave proximity lift dock.",
+    "youtubeVideoId": "mG56k7dCxYg",
+    "thumbnailUrl": "https://i.ytimg.com/vi/mG56k7dCxYg/maxresdefault.jpg",
+    "tags": ["Dock", "Hover"]
+  },
+  {
+    "id": "linear-spotlight-card",
+    "title": "Linear-Style Spotlight Hover Card | Advanced Minimalist UI",
+    "description": "Build a minimalist spotlight card hover effect.",
+    "youtubeVideoId": "qzlniuG10wg",
+    "thumbnailUrl": "https://i.ytimg.com/vi/qzlniuG10wg/maxresdefault.jpg",
+    "tags": ["Spotlight", "Minimalist"]
+  },
+  {
+    "id": "fluid-tab-navigation",
+    "title": "Fluid Tab Navigation | Sliding Pill UI Micro-Interaction",
+    "description": "Design a fluid sliding pill tab navigation.",
+    "youtubeVideoId": "J_dhYDaNea4",
+    "thumbnailUrl": "https://i.ytimg.com/vi/J_dhYDaNea4/maxresdefault.jpg",
+    "tags": ["Navigation", "Tabs"]
+  },
+  {
+    "id": "magnetic-hover-button",
+    "title": "Create a Modern Magnetic Hover Button | Clean UI Micro-Interactions",
+    "description": "Build a minimalist UI button magnetically pulled toward the cursor.",
+    "youtubeVideoId": "IOy8f4lAhPU",
+    "thumbnailUrl": "https://i.ytimg.com/vi/IOy8f4lAhPU/maxresdefault.jpg",
+    "tags": ["Magnetic", "Hover"]
+  },
+  {
+    "id": "js-modules-firebase-chat",
+    "title": "JS Modules | Firebase chat app using HTML",
+    "description": "Create a fully functional Firebase chat application leveraging JavaScript modules.",
+    "youtubeVideoId": "xPUfMxpu2Gg",
+    "thumbnailUrl": "https://i.ytimg.com/vi/xPUfMxpu2Gg/maxresdefault.jpg",
+    "tags": ["Firebase", "Chat App"]
+  },
+  {
+    "id": "load-local-html-webview",
+    "title": "1.1 Load local html file in webview",
+    "description": "Step-by-step tutorial on loading a local HTML file directly into a WebView.",
+    "youtubeVideoId": "54o9u3BzEtw",
+    "thumbnailUrl": "https://i.ytimg.com/vi/54o9u3BzEtw/maxresdefault.jpg",
+    "tags": ["WebView", "HTML"]
+  },
+  {
+    "id": "resizable-div-html",
+    "title": "Pure JS | Resizable div using html",
+    "description": "Learn to code a custom resizable UI div using purely HTML and Vanilla JS.",
+    "youtubeVideoId": "We-Og5peS3Y",
+    "thumbnailUrl": "https://i.ytimg.com/vi/We-Og5peS3Y/maxresdefault.jpg",
+    "tags": ["Resizable", "Vanilla JS"]
+  },
+  {
+    "id": "make-web-app-android",
+    "title": "1.0 How to make web app in android",
+    "description": "Introduction to wrapping your web applications inside native Android components.",
+    "youtubeVideoId": "OoWYzI13ADQ",
+    "thumbnailUrl": "https://i.ytimg.com/vi/OoWYzI13ADQ/maxresdefault.jpg",
+    "tags": ["Android", "Web App"]
+  },
+  {
+    "id": "online-offline-detection",
+    "title": "Pure JS | Online offline detection using html",
+    "description": "Implement network status detection directly in the browser to show online/offline states.",
+    "youtubeVideoId": "VmxZ8uR4NCI",
+    "thumbnailUrl": "https://i.ytimg.com/vi/VmxZ8uR4NCI/maxresdefault.jpg",
+    "tags": ["Network", "Vanilla JS"]
+  },
+  {
+    "id": "typing-animation-javascript",
+    "title": "Typing Animation using javascript",
+    "description": "Build a classic console-style typing animation effect purely with JavaScript.",
+    "youtubeVideoId": "MgTeXejRkw0",
+    "thumbnailUrl": "https://i.ytimg.com/vi/MgTeXejRkw0/maxresdefault.jpg",
+    "tags": ["Animation", "Typing"]
+  },
+  {
+    "id": "svg-drawing-board",
+    "title": "Pure JS | Drawing board using html | SVG drawing board",
+    "description": "Create an interactive drawing and sketching board directly in the browser using SVG.",
+    "youtubeVideoId": "et3E2mCYNVU",
+    "thumbnailUrl": "https://i.ytimg.com/vi/et3E2mCYNVU/maxresdefault.jpg",
+    "tags": ["SVG", "Drawing"]
+  },
+  {
+    "id": "collision-bouncing-ball",
+    "title": "Pure JS | Collision detection using html | bouncing ball animation",
+    "description": "Implement raw hit-box collision detection for a bouncy ball physics animation.",
+    "youtubeVideoId": "bAZizf0411U",
+    "thumbnailUrl": "https://i.ytimg.com/vi/bAZizf0411U/maxresdefault.jpg",
+    "tags": ["Collision", "Physics"]
+  },
+  {
+    "id": "drag-drop-touch-events",
+    "title": "Pure JS | Drag and drop using touch events in html",
+    "description": "Make your drag and drop systems completely mobile-friendly with touch event listeners.",
+    "youtubeVideoId": "GU3lQTbwUZc",
+    "thumbnailUrl": "https://i.ytimg.com/vi/GU3lQTbwUZc/maxresdefault.jpg",
+    "tags": ["Drag Drop", "Touch"]
+  },
+  {
+    "id": "detect-device-orientation",
+    "title": "Pure JS | Detect Device Orientation using HTML",
+    "description": "Tap into device hardware to detect orientation changes directly from your web app.",
+    "youtubeVideoId": "2azBdwyssqo",
+    "thumbnailUrl": "https://i.ytimg.com/vi/2azBdwyssqo/maxresdefault.jpg",
+    "tags": ["Hardware", "Orientation"]
+  },
+  {
+    "id": "drag-and-drop-html",
+    "title": "Pure JS | drag and drop using HTML",
+    "description": "A straightforward guide to implementing robust HTML5 drag and drop functionality.",
+    "youtubeVideoId": "7c4-Lco70X4",
+    "thumbnailUrl": "https://i.ytimg.com/vi/7c4-Lco70X4/maxresdefault.jpg",
+    "tags": ["Drag Drop", "Vanilla JS"]
+  },
+  {
+    "id": "multi-touch-pointer",
+    "title": "Pure JS | Multi touch pointer follower using HTML",
+    "description": "Expand standard pointer events to track and render multi-touch inputs simultaneously.",
+    "youtubeVideoId": "TXeFc8KEQxI",
+    "thumbnailUrl": "https://i.ytimg.com/vi/TXeFc8KEQxI/maxresdefault.jpg",
+    "tags": ["Multi-touch", "Pointer"]
+  },
+  {
+    "id": "css-glass-morphism",
+    "title": "Pure CSS | Glass Morphism using html | Blur Background",
+    "description": "Master backdrop-filters and pure CSS styling to create a modern glassmorphism UI.",
+    "youtubeVideoId": "xCPElL8bFLs",
+    "thumbnailUrl": "https://i.ytimg.com/vi/xCPElL8bFLs/maxresdefault.jpg",
+    "tags": ["CSS", "Glassmorphism"]
+  },
+  {
+    "id": "animate-on-scroll",
+    "title": "Pure JS | Animate on scroll using html | Scroll to Animate",
+    "description": "Trigger elegant UI animations based on the user's scroll position without external libraries.",
+    "youtubeVideoId": "FR-p_d3ag6I",
+    "thumbnailUrl": "https://i.ytimg.com/vi/FR-p_d3ag6I/maxresdefault.jpg",
+    "tags": ["Scroll", "Animation"]
+  },
+  {
+    "id": "simple-slidebar-html",
+    "title": "Make a simple slidebar using html css and javascript",
+    "description": "Build a custom interactive slidebar component to adjust variable values dynamically.",
+    "youtubeVideoId": "9kv5fzf_5MI",
+    "thumbnailUrl": "https://i.ytimg.com/vi/9kv5fzf_5MI/maxresdefault.jpg",
+    "tags": ["Slider", "UI Component"]
+  },
+  {
+    "id": "hold-detection-html",
+    "title": "Pure JS | Hold detection in html",
+    "description": "Distinguish between a quick tap and a long press using raw JavaScript timer events.",
+    "youtubeVideoId": "sfIQBlutUEs",
+    "thumbnailUrl": "https://i.ytimg.com/vi/sfIQBlutUEs/maxresdefault.jpg",
+    "tags": ["Events", "Vanilla JS"]
+  },
+  {
+    "id": "pointer-follower-touch",
+    "title": "Pure JS | pointer follower in html | show touch location in html",
+    "description": "Track the exact X and Y coordinates of a user's touch and bind a UI element to follow it.",
+    "youtubeVideoId": "GfA4hOnWHVo",
+    "thumbnailUrl": "https://i.ytimg.com/vi/GfA4hOnWHVo/maxresdefault.jpg",
+    "tags": ["Pointer", "Touch Event"]
+  },
+  {
+    "id": "detect-swipe-direction",
+    "title": "Pure JS | how to detect swipe direction in html",
+    "description": "Build logic to calculate vector direction and detect Left/Right/Up/Down screen swipes.",
+    "youtubeVideoId": "AiRNt4asPQI",
+    "thumbnailUrl": "https://i.ytimg.com/vi/AiRNt4asPQI/maxresdefault.jpg",
+    "tags": ["Swipe", "Gestures"]
   }
 ]
