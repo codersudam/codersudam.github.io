@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glass Morphism</title>
+    <style>
+        body {
+            /* Initially set to a local image, later changed to a gradient in the video */
+            background: -webkit-linear-gradient(45deg, #00de74, #00dec4);
+            background-size: auto 100%;
+            background-position: center center;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        #glass {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            -webkit-transform: translate(-50%, -50%);
+
+            /* Original video values */
+            height: 700px;
+            width: 700px;
+
+            /* Added to guarantee full responsiveness on all screen sizes */
+            max-width: 90vw;
+            max-height: 90vh;
+            box-sizing: border-box;
+            padding: 20px;
+            text-align: center;
+
+            border-radius: 50px;
+            background: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4));
+            font-size: 60px;
+            display: flex;
+            justify-content: center;
+            align-content: center;
+            flex-wrap: wrap;
+            color: #fff;
+
+            /* lets reflect the glass */
+            border-left: 2px solid rgba(255, 255, 255, 0.5);
+            border-top: 2px solid rgba(255, 255, 255, 0.5);
+
+            /* but it still not looking like a glass */
+            /* because glass has a property to blur its Background */
+            /* how to do this */
+            backdrop-filter: blur(20px);
+            /* now its looks like a glass */
+        }
+
+        /* Scaling down typography for smaller viewports */
+        @media (max-width: 768px) {
+            #glass {
+                font-size: 40px;
+                border-radius: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="glass">glass morphism</div>
+
+</body>
+
+</html>
