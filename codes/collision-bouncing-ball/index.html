@@ -1,0 +1,59 @@
+<html>
+  <head>
+    <style>
+    #ball{
+     position:fixed;
+     width:500px;
+     aspect-ratio:1/1;
+     background:#000;
+     border-radius:50%;
+    }
+    </style>
+  </head>
+  <body>
+     <div id="ball"></div>
+     <script>
+      var ball = document.getElementById('ball');
+      
+      var H = document.body.clientHeight,
+      W = document.body.clientWidth ;
+      
+      var Xdir = 'right' ,
+          Ydir = 'down' ;
+          
+      setInterval(function(){
+       var bound = ball.getBoundingClientRect();
+       var X = bound.left ,
+           Y = bound.top ;
+           
+      if(bound.left <= 0){
+       Xdir = 'right';
+      } else if(bound.right >= W){
+       Xdir = 'left';
+      }
+      
+      if(bound.top <= 0){
+       Ydir = 'down' ;
+       
+      } else if(bound.bottom >= H){
+       Ydir = 'up';
+      }
+      
+      
+      if(Ydir == 'up'){
+       ball.style.top = Y-1 ;
+      } else if(Ydir == 'down'){
+       ball.style.top = Y+1 ;
+      }
+      
+      if(Xdir == 'right'){
+       ball.style.left = X+1 ;
+      } else if(Xdir == 'left'){
+       ball.style.left = X-1 ;
+      }
+      },1);
+      
+      // to increase speed of ball decrease the no. of intervals
+     </script>
+  </body>
+</html>
