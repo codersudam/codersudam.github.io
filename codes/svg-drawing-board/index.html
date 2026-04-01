@@ -1,0 +1,39 @@
+<html>
+ <head>
+  <style>
+   svg{
+    position:fixed;
+    left:0px;
+    top:0px;
+    height:100%;
+    width:100%;
+    background:#000;
+   }
+  </style>
+ </head>
+ <body>
+  <svg ontouchstart="ts(event)"
+       ontouchmove="tm(event)">
+   <path id="ink" stroke="#fff" stroke-width="2px"></path>
+  </svg>
+  <script>
+   const ink = document.querySelector('#ink');
+   
+   var x , y , dval="";
+   
+   function ts(e){
+    x = e.touches[0].clientX;
+    y = e.touches[0].clientY;
+    dval+=" M"+x+" "+y+"L";
+   }
+   
+   function tm(e){
+    mx = e.touches[0].clientX;
+    my = e.touches[0].clientY;
+    dval+=mx+" "+my+" ";
+    ink.setAttribute('d',dval);
+    e.preventDefault();
+   }
+  </script>
+ </body>
+</html>
