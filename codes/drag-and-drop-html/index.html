@@ -1,0 +1,42 @@
+<html>
+  <!-- drag and drop requested by "Question king sahni " -->
+  <head>
+    <style>
+      #box{
+        height:100;
+        width:100;
+        border:1px dashed #aaa;
+        border-radius:10px;
+        margin:10px;
+        overflow:scroll;
+      }
+      
+      #drag{
+        height:100;
+      }
+      
+    </style>
+  </head>
+  <body>
+    <div ondrop="drop(event)" ondragover="allowDrop(event)" id="box"></div>
+    <img id="drag" src="http://localhost:8158/main.png" ondragstart="drag(event)" draggable="true">
+    
+    <script>
+    function allowDrop(evt){
+      evt.preventDefault();
+    }
+    
+    function drag(evt){
+      evt.dataTransfer.setData("text",evt.target.id);
+    }
+    
+    function drop(evt){
+      evt.preventDefault();
+      var data = evt.dataTransfer.getData("text");
+      evt.target.appendChild(document.getElementById(data));
+    }
+    </script>
+    
+    <!-- thanks for wathching... -->
+  </body>
+</html>
