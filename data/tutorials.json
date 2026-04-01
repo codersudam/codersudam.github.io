@@ -168,14 +168,6 @@
     "tags": ["Network", "Vanilla JS"]
   },
   {
-    "id": "typing-animation-javascript",
-    "title": "Typing Animation using javascript",
-    "description": "Build a classic console-style typing animation effect purely with JavaScript.",
-    "youtubeVideoId": "MgTeXejRkw0",
-    "thumbnailUrl": "https://i.ytimg.com/vi/MgTeXejRkw0/maxresdefault.jpg",
-    "tags": ["Animation", "Typing"]
-  },
-  {
     "id": "svg-drawing-board",
     "title": "Pure JS | Drawing board using html | SVG drawing board",
     "description": "Create an interactive drawing and sketching board directly in the browser using SVG.",
