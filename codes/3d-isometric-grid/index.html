@@ -1,1 +1,223 @@
-<title>3d isometric grid</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Isometric Proximity Grid</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700&display=swap');
+
+    /* Added base box-sizing for perfect alignment across all viewports */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-color: #f3f5f9;
+      background-image: radial-gradient(circle at 50% 50%, #fff 0%, #e2e8f0 100%);
+      font-family: "Plus Jakarta Sans", sans-serif;
+      overflow: hidden;
+      perspective: 1200px; /* Crucial for the 3D depth */
+    }
+
+    /* Floating UI Header */
+    .header {
+      position: absolute;
+      top: 40px;
+      text-align: center;
+      z-index: 10;
+      pointer-events: none;
+      width: 100%;
+      padding: 0 20px;
+    }
+
+    .title {
+      color: #0f172a;
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 0 0 8px 0;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      color: #64748b;
+      font-weight: 500;
+      font-size: 1rem;
+      margin: 0;
+    }
+
+    /* The 3D Scene Container */
+    .scene {
+      position: relative;
+      transform-style: preserve-3d;
+      /* Tilt the grid into an isometric perspective */
+      transform: rotateX(60deg) rotateZ(-45deg);
+      transition: transform 0.2s ease-out;
+      /* Dynamic sizing to preserve layout on various screens */
+      width: min(80vw, 600px);
+      height: min(80vw, 600px);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      grid-template-rows: repeat(12, 1fr);
+      gap: 6px;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+    }
+
+    /* Individual Grid Cells */
+    .cell {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 
+        -4px 4px 10px rgba(0, 0, 0, 0.05),
+        inset 1px -1px 2px rgba(255, 255, 255, 1);
+      /* Easing applied for the smooth wave effect */
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.4s ease, box-shadow 0.4s ease;
+      transform: translateZ(var(--elevation, 0px));
+      will-change: transform;
+    }
+
+    /* Top face highlight for 3D realism */
+    .cell::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    /* Active/Hover State */
+    .cell.active {
+      background: #6366f1; /* Vibrant Indigo */
+      box-shadow: 
+        -10px 10px 20px rgba(99, 102, 241, 0.3),
+        inset 1px -1px 2px rgba(255, 255, 255, 0.4);
+    }
+
+    .cell.neighbor-1 {
+      background: #818cf8;
+    }
+
+    .cell.neighbor-2 {
+      background: #a5b4fc;
+    }
+
+    .cell.neighbor-3 {
+      background: #e0e7ff;
+    }
+
+    /* Scale down elements for smaller viewports */
+    @media (max-width: 480px) {
+      .title { font-size: 1.5rem; }
+      .subtitle { font-size: 0.875rem; }
+      .grid { gap: 3px; }
+      .cell { border-radius: 6px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1 class="title">Isometric Proximity Grid</h1>
+    <h3 class="subtitle">Hover to trigger a 3D kinetic wave.</h3>
+  </div>
+
+  <div class="scene">
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <script>
+    const grid = document.getElementById('grid');
+    const scene = document.querySelector('.scene');
+    const cols = 12;
+    const rows = 12;
+    const cells = [];
+
+    // 1. Generate the Grid
+    for (let i = 0; i < cols * rows; i++) {
+      const cell = document.createElement('div');
+      cell.classList.add('cell');
+      
+      // Store grid coordinates for distance math
+      const c = i % cols;
+      const r = Math.floor(i / cols);
+      cell.dataset.x = c;
+      cell.dataset.y = r;
+      
+      grid.appendChild(cell);
+      cells.push(cell);
+    }
+
+    // 2. Proximity Wave Physics
+    grid.addEventListener('mousemove', (e) => {
+      // Find the specific cell we are hovering over
+      const target = e.target.closest('.cell');
+      if (!target) return;
+      
+      const targetX = parseInt(target.dataset.x);
+      const targetY = parseInt(target.dataset.y);
+      
+      cells.forEach(cell => {
+        const x = parseInt(cell.dataset.x);
+        const y = parseInt(cell.dataset.y);
+        
+        // Calculate Euclidean distance from the hovered cell
+        const dx = x - targetX;
+        const dy = y - targetY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        // Reset classes
+        cell.className = 'cell';
+        
+        // Apply elevation and color based on distance
+        if (distance === 0) {
+          cell.style.setProperty('--elevation', '40px');
+          cell.classList.add('active');
+        } else if (distance < 1.5) {
+          cell.style.setProperty('--elevation', '25px');
+          cell.classList.add('neighbor-1');
+        } else if (distance < 2.5) {
+          cell.style.setProperty('--elevation', '12px');
+          cell.classList.add('neighbor-2');
+        } else if (distance < 3.5) {
+          cell.style.setProperty('--elevation', '6px');
+          cell.classList.add('neighbor-3');
+        } else {
+          cell.style.setProperty('--elevation', '0px');
+        }
+      });
+    });
+
+    // 3. Reset the grid when mouse leaves
+    grid.addEventListener('mouseleave', () => {
+      cells.forEach(cell => {
+        cell.className = 'cell';
+        cell.style.setProperty('--elevation', '0px');
+      });
+    });
+
+    // 4. Parallax Scene Tilt
+    document.addEventListener('mousemove', (e) => {
+      const xAxis = (window.innerWidth / 2 - e.pageX) / 50;
+      const yAxis = (window.innerHeight / 2 - e.pageY) / 50;
+      
+      // Combine base isometric rotation with subtle mouse parallax
+      scene.style.transform = `rotateX(${60 + yAxis}deg) rotateZ(${-45 + xAxis}deg)`;
+    });
+  </script>
+</body>
+</html>
