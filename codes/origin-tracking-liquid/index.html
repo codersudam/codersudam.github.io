@@ -1,1 +1,146 @@
-<title>origin tracking liquid</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Directional Liquid Fill Card</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    /* Base reset for perfect responsive alignment */
+    * {
+      box-sizing: border-box;
+    }
+
+    /* Minimalist Dark Mode Foundation */
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #09090b; /* Pure deep black */
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* The Card Container */
+    .card {
+      position: relative;
+      /* Dynamic viewport constraint added for responsiveness */
+      width: min(90vw, 320px);
+      padding: 40px 32px;
+      background-color: #09090b;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      overflow: hidden;
+      cursor: pointer;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    /* The "Liquid" that will fill the card */
+    .liquid {
+      position: absolute;
+      /* Make it large enough to cover the entire card from any corner */
+      width: 800px;
+      height: 800px;
+      background-color: #ffffff; /* Pure white for the blend mode to work perfectly */
+      border-radius: 50%;
+      pointer-events: none; /* Crucial: stops the circle from interfering with mouse events */
+      
+      /* Start shrunk and centered around the top/left coordinates */
+      transform: translate(-50%, -50%) scale(0);
+      z-index: 1;
+    }
+
+    /* The Content Layer */
+    .content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      color: #ffffff;
+      
+      /* THE MAGIC TRICK: 
+         When the white liquid fills the background behind this white text, 
+         this property perfectly inverts the text to black! */
+      mix-blend-mode: difference;
+    }
+
+    .content i {
+      font-size: 36px;
+    }
+
+    .content h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .content p {
+      margin: 0;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      /* Using solid white with high opacity keeps the blend mode crisp */
+      color: rgba(255, 255, 255, 0.9);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card" id="liquidCard">
+    <div class="liquid" id="liquid"></div>
+    <div class="content">
+      <i class="ph ph-aperture"></i>
+      <h2>Inverted Reality</h2>
+      <p>Hover over this card to see the directional liquid fill and pure CSS blend modes in action.</p>
+    </div>
+  </div>
+
+  <script>
+    const card = document.getElementById('liquidCard');
+    const liquid = document.getElementById('liquid');
+
+    // When the mouse ENTERS the card
+    card.addEventListener('mouseenter', (e) => {
+      // Calculate exact cursor entry point relative to the card
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      // 1. Remove all transitions so we can instantly teleport the invisible circle to the cursor
+      liquid.style.transition = 'none';
+      liquid.style.left = `${x}px`;
+      liquid.style.top = `${y}px`;
+      liquid.style.transform = 'translate(-50%, -50%) scale(0)';
+
+      // 2. Force the browser to register the new position immediately (Reflow)
+      liquid.getBoundingClientRect();
+
+      // 3. Re-enable the transition ONLY for the scale, so it grows beautifully outward
+      liquid.style.transition = 'transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)';
+      liquid.style.transform = 'translate(-50%, -50%) scale(1)';
+    });
+
+    // When the mouse LEAVES the card
+    card.addEventListener('mouseleave', (e) => {
+      // Calculate exact cursor exit point
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      // 1. Transition EVERYTHING: scale, left, and top.
+      // This causes the circle to shrink while simultaneously moving TOWARDS the exit point
+      liquid.style.transition = 'transform 0.5s ease, left 0.5s ease, top 0.5s ease';
+      
+      // Move the origin to the exit point while shrinking back to 0
+      liquid.style.left = `${x}px`;
+      liquid.style.top = `${y}px`;
+      liquid.style.transform = 'translate(-50%, -50%) scale(0)';
+    });
+  </script>
+</body>
+</html>
