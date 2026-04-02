@@ -1,1 +1,117 @@
-<title>interactive 3D text</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic 3D Extrusion Typography</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@900&display=swap" rel="stylesheet">
+  <style>
+    /* Full viewport foundation - NO zooming required! */
+    body {
+      margin: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #e4e4e7; /* Clean, light-mode architectural grey */
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+      
+      /* Creates the 3D space for the subtle text tilt */
+      perspective: 1000px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* The massive typography container */
+    .hero-text {
+      font-size: 16vw; /* Viewport width ensures it scales massively on any screen */
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: -0.06em;
+      color: #ffffff;
+      margin: 0;
+      line-height: 0.8;
+      cursor: default;
+      user-select: none;
+
+      /* Center the transformation axis */
+      transform-origin: center;
+      will-change: transform, text-shadow;
+    }
+  </style>
+</head>
+<body>
+
+  <h1 class="hero-text" id="dynamicText">DEPTH</h1>
+
+  <script>
+    const text = document.getElementById('dynamicText');
+
+    // Physics Configuration
+    const shadowSteps = 60; // How many layers of shadow to stack (defines the "depth")
+    const intensity = 0.15; // How far the shadow stretches away from the cursor
+
+    // Target coordinates (calculated based on mouse position relative to center)
+    let targetX = 0;
+    let targetY = 0;
+
+    // Current coordinates (used for the smooth lerp transition)
+    let currentX = 0;
+    let currentY = 0;
+
+    // Track mouse movement
+    window.addEventListener('mousemove', (e) => {
+      // Find the EXACT center of the screen
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
+
+      // Calculate the distance from the center and apply our intensity modifier.
+      // We invert the math so the shadow pushes AWAY from the cursor like a light source.
+      targetX = (centerX - e.clientX) * intensity;
+      targetY = (centerY - e.clientY) * intensity;
+    });
+
+    // The Lerp Animation Loop
+    function animate() {
+      // Lerp Formula: current += (target - current) * friction
+      // 0.08 dictates the "weight" or "lag" of the extrusion
+      currentX += (targetX - currentX) * 0.08;
+      currentY += (targetY - currentY) * 0.08;
+
+      let shadowString = '';
+
+      // Generate the solid 3D extrusion dynamically
+      for (let i = 1; i <= shadowSteps; i++) {
+        // Calculate opacity: starts solid, fades to transparent at the end of the extrusion
+        const opacity = 1 - (i / shadowSteps);
+
+        // The color is a deep, architectural slate grey (rgb 39, 39, 42)
+        const color = `rgba(39, 39, 42, ${opacity * 0.8})`;
+
+        // Append this layer to the shadow string
+        shadowString += `${currentX * i}px ${currentY * i}px 0px ${color}`;
+
+        // Add a comma if it's not the last layer
+        if (i !== shadowSteps) {
+          shadowString += ', ';
+        }
+      }
+
+      // Apply the massive generated shadow string to the text
+      text.style.textShadow = shadowString;
+
+      // BONUS: Add a subtle 3D tilt to the text face to match the shadow's perspective
+      const tiltX = currentY * 0.5; // Rotate around X axis based on Y movement
+      const tiltY = -currentX * 0.5; // Rotate around Y axis based on X movement
+      text.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+
+      // Loop forever
+      requestAnimationFrame(animate);
+    }
+
+    // Start the engine
+    animate();
+  </script>
+</body>
+</html>
