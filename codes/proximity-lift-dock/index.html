@@ -1,1 +1,174 @@
-<title>proximity list dock</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proximity Lift Dock</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  
+  <style>
+    /* Minimalist Dark Foundation */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #09090b; /* Deep architectural black */
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* The Dock Container - Fixed Size Layout */
+    .dock {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      padding: 12px 24px;
+      background: rgba(255, 255, 255, 0.03);
+      
+      /* Glassmorphism setup */
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 100px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      
+      /* Responsiveness constraint */
+      max-width: 90vw;
+    }
+
+    /* Individual Dock Items */
+    .dock-item {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      
+      /* CSS Variables heavily driven by JS */
+      background-color: rgba(255, 255, 255, var(--bg-alpha, 0.03));
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 50%;
+      
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: rgba(255, 255, 255, var(--icon-alpha, 0.5));
+      cursor: pointer;
+      
+      /* The Magic: We map a JS variable to translate to lift the icon upwards */
+      transform: translateY(calc(var(--lift, 0) * -1px));
+      transition: transform 0.15s ease-out, background-color 0.15s ease-out, color 0.15s ease-out, box-shadow 0.15s ease-out;
+      z-index: 1;
+    }
+
+    /* Hover state: Solidify the text and add a subtle glow */
+    .dock-item:hover {
+      color: #ffffff;
+      box-shadow: 0 4px 20px rgba(255, 255, 255, 0.2);
+      z-index: 10;
+    }
+
+    .dock-item i {
+      font-size: 20px;
+      transition: all 0.2s ease;
+    }
+
+    /* Seamless scaling for smaller viewports */
+    @media (max-width: 600px) {
+      .dock {
+        gap: 8px;
+        padding: 12px 16px;
+        border-radius: 32px;
+      }
+      .dock-item {
+        width: 38px;
+        height: 38px;
+      }
+      .dock-item i {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="dock" id="dock">
+    <div class="dock-item"><i class="ph ph-house"></i></div>
+    <div class="dock-item"><i class="ph ph-magnifying-glass"></i></div>
+    <div class="dock-item"><i class="ph ph-bell"></i></div>
+    <div class="dock-item"><i class="ph ph-envelope-simple"></i></div>
+    <div class="dock-item"><i class="ph ph-bookmark-simple"></i></div>
+    <div class="dock-item"><i class="ph ph-camera"></i></div>
+    <div class="dock-item"><i class="ph ph-folder"></i></div>
+    <div class="dock-item"><i class="ph ph-gear"></i></div>
+  </div>
+
+  <script>
+    const dock = document.getElementById('dock');
+    const items = document.querySelectorAll('.dock-item');
+
+    // Configuration Variables
+    const maxLift = 14;      // Maximum pixels the icon will float upwards
+    const proximity = 120;   // Interaction radius in pixels
+
+    // Attach smooth physics to the cursor movement inside the dock container
+    dock.addEventListener('mousemove', (e) => {
+      items.forEach((item) => {
+        // Calculate the exact center coordinates of the current dock item
+        const rect = item.getBoundingClientRect();
+        const itemCenterX = rect.left + rect.width / 2;
+        const itemCenterY = rect.top + rect.height / 2;
+
+        const distanceX = e.clientX - itemCenterX;
+        const distanceY = e.clientY - itemCenterY;
+        
+        // Euclidean distance formula from the cursor to the item's center
+        const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+
+        if (distance < proximity) {
+          // Progress represents a value between 0 (edge of radius) and 1 (exact center)
+          const progress = Math.max(0, 1 - (distance / proximity));
+          
+          // 1. Calculate Vertical Lift
+          const lift = maxLift * progress;
+          
+          // 2. Calculate Background Alpha (Fades smoothly from 0.03 to 0.08)
+          const bgAlpha = 0.03 + (0.05 * progress);
+          
+          // 3. Calculate Icon Alpha (Fades smoothly from 0.5 base to 1.0)
+          const iconAlpha = 0.5 + (0.5 * progress);
+
+          // Inject the dynamically calculated states directly into the inline CSS Variables
+          item.style.setProperty('--lift', lift);
+          item.style.setProperty('--bg-alpha', bgAlpha);
+          item.style.setProperty('--icon-alpha', iconAlpha);
+        } else {
+          // Reset items that fall outside the hover radius
+          item.style.setProperty('--lift', 0);
+          item.style.setProperty('--bg-alpha', 0.03);
+          item.style.setProperty('--icon-alpha', 0.5);
+        }
+      });
+    });
+
+    // Fluidly reset all properties when the cursor leaves the entire dock bounds
+    dock.addEventListener('mouseleave', () => {
+      items.forEach((item) => {
+        item.style.setProperty('--lift', 0);
+        item.style.setProperty('--bg-alpha', 0.03);
+        item.style.setProperty('--icon-alpha', 0.5);
+      });
+    });
+  </script>
+</body>
+</html>
