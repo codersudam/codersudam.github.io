@@ -1,5 +1,13 @@
 [
   {
+    "id": "3d-Holographic-Card",
+    "title": "Advanced 3D Holographic Foil Card ✨ | CSS Math & Light Theme FinTech UI",
+    "description": "A premium, interactive 3D credit card component that uses cursor-tracking CSS math and gradient blend modes to simulate a realistic holographic foil effect.",
+    "youtubeVideoId": "S5OizezWkPc",
+    "thumbnailUrl": "https://i.ytimg.com/vi/S5OizezWkPc/maxresdefault.jpg",
+    "tags": ["3D", "Holographic", "Vanilla JS"]
+  },
+  {
     "id": "3d-isometric-grid",
     "title": "3D Isometric Proximity Grid | Using HTML, CSS, and Vanilla JS",
     "description": "Learn how to build a dynamic 3D isometric grid that reacts to the mouse cursor's proximity.",
