@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Holographic Card UI</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+
+    /* Pristine, perfectly aligned light theme background */
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f1f5f9;
+      background-image: 
+        radial-gradient(circle at 15% 50%, rgba(56, 189, 248, 0.08), transparent 30%),
+        radial-gradient(circle at 85% 30%, rgba(168, 85, 247, 0.08), transparent 30%);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      padding: 24px;
+      box-sizing: border-box;
+      perspective: 1500px; /* Crucial for the 3D extrusion */
+    }
+
+    .card-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      aspect-ratio: 1.586; /* Standard credit card ratio */
+      transform-style: preserve-3d;
+      transform: rotateX(var(--rot-x, 0deg)) rotateY(var(--rot-y, 0deg));
+      transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      cursor: crosshair;
+    }
+
+    /* Main Frosted Glass Body */
+    .glass-card {
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      box-shadow: 
+        0 20px 50px rgba(15, 23, 42, 0.08),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 30px;
+      box-sizing: border-box;
+      transform-style: preserve-3d;
+    }
+
+    /* The Holographic Foil Overlay 
+      Uses mix-blend-mode and dynamic background positioning
+    */
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+        rgba(255, 255, 255, 0.9) 0%,
+        rgba(253, 164, 175, 0.4) 20%,
+        rgba(125, 211, 252, 0.4) 40%,
+        rgba(196, 181, 253, 0.4) 60%,
+        transparent 80%
+      );
+      opacity: var(--active, 0);
+      mix-blend-mode: color-burn;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Bright specular glare on top */
+    .glass-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        105deg,
+        transparent 20%,
+        rgba(255, 255, 255, 0.6) 25%,
+        transparent 30%
+      );
+      background-size: 200% 200%;
+      background-position: var(--glare-pos, 100%) 50%;
+      opacity: var(--active, 0);
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+      z-index: 2;
+      mix-blend-mode: overlay;
+    }
+
+    /* Content Elements - Pushed out in Z-space */
+    .card-header, .card-footer, .card-number {
+      position: relative;
+      z-index: 10;
+      transform: translateZ(40px); /* 3D Extrusion */
+      transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      text-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .chip {
+      width: 48px;
+      height: 36px;
+      background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+      border-radius: 8px;
+      border: 1px solid #f8fafc;
+      box-shadow: inset 0 1px 2px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Chip circuit lines */
+    .chip::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(90deg, transparent 45%, #94a3b8 45%, #94a3b8 55%, transparent 55%),
+        linear-gradient(0deg, transparent 45%, #94a3b8 45%, #94a3b8 55%, transparent 55%);
+      opacity: 0.3;
+    }
+
+    .logo {
+      font-weight: 800;
+      font-size: 1.4rem;
+      color: #0f172a;
+      letter-spacing: -1px;
+    }
+
+    .card-number {
+      font-family: 'Space Mono', monospace;
+      font-size: 1.6rem;
+      color: #334155;
+      letter-spacing: 2px;
+      margin-top: auto;
+      margin-bottom: 20px;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      font-size: 0.85rem;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .holder-name {
+      font-weight: 600;
+      color: #0f172a;
+      font-size: 1.05rem;
+      margin-top: 4px;
+    }
+
+    .valid-thru {
+      text-align: right;
+    }
+
+    .valid-date {
+      font-weight: 600;
+      color: #0f172a;
+      font-size: 1.05rem;
+      font-family: 'Space Mono', monospace;
+      margin-top: 4px;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="card-wrapper" id="card">
+    <div class="glass-card">
+      
+      <div class="card-header">
+        <div class="chip"></div>
+        <div class="logo">VERTEX</div>
+      </div>
+
+      <div class="card-number">
+        4000 1234 5678 9010
+      </div>
+
+      <div class="card-footer">
+        <div>
+          <div>Cardholder</div>
+          <div class="holder-name">ALEXANDER WRIGHT</div>
+        </div>
+        <div class="valid-thru">
+          <div>Valid Thru</div>
+          <div class="valid-date">12/28</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const card = document.getElementById('card');
+
+    const handleMove = (e) => {
+      // Setup coordinates for both touch and mouse
+      let clientX = e.clientX;
+      let clientY = e.clientY;
+
+      if (e.touches && e.touches.length > 0) {
+        clientX = e.touches.clientX;
+        clientY = e.touches.clientY;
+      }
+
+      const rect = card.getBoundingClientRect();
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+
+      // 1. Calculate 3D Tilt (Max 20 degrees)
+      const rotateX = ((y - centerY) / centerY) * -20;
+      const rotateY = ((x - centerX) / centerX) * 20;
+
+      // 2. Calculate Glare Position for specular reflection
+      const glarePos = (x / rect.width) * 100;
+
+      // Apply CSS Variables
+      card.style.setProperty('--rot-x', `${rotateX}deg`);
+      card.style.setProperty('--rot-y', `${rotateY}deg`);
+      card.style.setProperty('--mouse-x', `${x}px`);
+      card.style.setProperty('--mouse-y', `${y}px`);
+      card.style.setProperty('--glare-pos', `${glarePos}%`);
+      card.style.setProperty('--active', `1`);
+      
+      // Remove easing during movement for instant tactile response
+      card.style.transition = 'none';
+      const elements = document.querySelectorAll('.card-header, .card-number, .card-footer');
+      elements.forEach(el => el.style.transition = 'none');
+    };
+
+    const handleLeave = () => {
+      // Snap back with smooth spring-like bezier physics
+      card.style.setProperty('--rot-x', `0deg`);
+      card.style.setProperty('--rot-y', `0deg`);
+      card.style.setProperty('--active', `0`);
+      
+      card.style.transition = 'transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)';
+      const elements = document.querySelectorAll('.card-header, .card-number, .card-footer');
+      elements.forEach(el => el.style.transition = 'transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)');
+    };
+
+    // Desktop
+    card.addEventListener('mousemove', handleMove);
+    card.addEventListener('mouseleave', handleLeave);
+
+    // Mobile
+    card.addEventListener('touchmove', handleMove, { passive: true });
+    card.addEventListener('touchend', handleLeave);
+  </script>
+
+</body>
+</html>
