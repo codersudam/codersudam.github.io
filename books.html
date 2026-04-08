@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Books | Sudam's Digital Ecosystem</title>
+    <meta name="description" content="Explore published books, blueprints, and guides by Sudam.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* Tech-Blue Cafe Variables */
+        :root {
+            --bg-base: #f0f4f8;
+            --glass-panel: rgba(255, 255, 255, 0.45);
+            --glass-hover: rgba(255, 255, 255, 0.75);
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --accent-main: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.4);
+            --border-glass: rgba(255, 255, 255, 0.7);
+            --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+            --transition-smooth: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            
+            /* Amazon Gold Accent */
+            --amazon-color: #f59e0b; 
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* NEW BLUEPRINT MATRIX CANVAS */
+        #blueprint-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+            background: radial-gradient(circle at center, #f0f4f8 0%, #e2e8f0 100%); /* Subtle blueprint backdrop */
+        }
+
+        header {
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+            background: var(--glass-panel);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: 100px;
+            padding: 16px 32px;
+            margin: 0 auto;
+            max-width: 1200px;
+            width: 92%;
+            box-shadow: var(--shadow-glass);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            color: var(--text-main);
+            text-decoration: none;
+            transition: var(--transition-smooth);
+        }
+
+        .brand-logo:hover {
+            transform: scale(1.02);
+        }
+
+        .nav-btn {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.3s ease;
+        }
+
+        .nav-btn:hover { color: var(--accent-main); }
+
+        .container {
+            max-width: 1000px;
+            margin: 60px auto;
+            padding: 0 5%;
+            width: 100%;
+            flex-grow: 1;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeUp 0.8s ease forwards;
+        }
+
+        .page-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, var(--text-main), var(--accent-main));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-desc {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* --- PREMIUM BOOK MODULE --- */
+        .book-module {
+            background: var(--glass-panel);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: 32px;
+            border: 1px solid var(--border-glass);
+            border-top: 1px solid rgba(255, 255, 255, 1);
+            border-left: 1px solid rgba(255, 255, 255, 1);
+            padding: 56px;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 60px;
+            align-items: center;
+            box-shadow: var(--shadow-glass);
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+            animation: fadeUp 0.8s forwards 0.1s;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .book-module:hover {
+            transform: translateY(-4px);
+            background: var(--glass-hover);
+            box-shadow: 0 30px 60px -15px rgba(31, 38, 135, 0.15);
+        }
+
+        .book-glow {
+            position: absolute;
+            top: -30%;
+            left: -10%;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: var(--amazon-color);
+            filter: blur(120px);
+            z-index: -1;
+            opacity: 0.1;
+            transition: var(--transition-smooth);
+        }
+
+        .book-module:hover .book-glow {
+            opacity: 0.2;
+            transform: scale(1.1);
+        }
+
+        /* --- 3D INTERACTIVE BOOK COVER --- */
+        .book-cover-container {
+            width: 240px;
+            height: 350px;
+            perspective: 1200px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .book-3d {
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.6s ease;
+            transform: rotateY(-15deg) rotateX(5deg);
+            border-radius: 4px 12px 12px 4px;
+            box-shadow: -15px 20px 35px rgba(0,0,0,0.15);
+            background: #cbd5e1;
+            position: relative;
+        }
+
+        .book-cover-container:hover .book-3d {
+            transform: rotateY(0deg) rotateX(0deg) scale(1.05);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+        }
+
+        .book-3d img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 4px 12px 12px 4px;
+            display: block;
+        }
+
+        /* Glossy Lighting Overlay */
+        .book-3d::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(90deg, 
+                rgba(255,255,255,0.2) 0%, 
+                rgba(255,255,255,0) 20%, 
+                rgba(255,255,255,0) 80%, 
+                rgba(255,255,255,0.1) 100%);
+            border-radius: 4px 12px 12px 4px;
+            pointer-events: none;
+        }
+
+        /* Book Spine Illusion */
+        .book-3d::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0;
+            width: 12px; height: 100%;
+            background: linear-gradient(90deg, 
+                rgba(0,0,0,0.4) 0%, 
+                rgba(255,255,255,0.2) 100%);
+            border-radius: 4px 0 0 4px;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* --- BOOK INFO & ICONOGRAPHY --- */
+        .book-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            z-index: 1;
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 6px 16px;
+            border-radius: 50px;
+            margin-bottom: 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--amazon-color);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .book-title {
+            font-size: 2.6rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+            color: var(--text-main);
+            line-height: 1.1;
+        }
+
+        .book-subtitle {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--accent-main);
+            margin-bottom: 24px;
+            line-height: 1.4;
+        }
+
+        /* Clutter-Free Meta Data Row */
+        .meta-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid var(--border-glass);
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        }
+
+        .meta-item svg {
+            color: var(--accent-main);
+        }
+
+        .btn-amazon {
+            background: #131921; 
+            color: white;
+            padding: 16px 32px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 1.05rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            transition: var(--transition-smooth);
+            border: 1px solid transparent;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .btn-amazon:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(245, 158, 11, 0.2);
+            border-color: var(--amazon-color);
+            background: #1e293b;
+        }
+
+        footer {
+            text-align: center;
+            padding: 60px 5% 40px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-top: auto;
+        }
+
+        @media (max-width: 860px) {
+            .book-module {
+                grid-template-columns: 1fr;
+                text-align: center;
+                padding: 40px 24px;
+                gap: 40px;
+            }
+            .book-cover-container { margin: 0 auto; }
+            .book-info { align-items: center; }
+            .meta-grid { justify-content: center; }
+            .page-title { font-size: 2.8rem; }
+            .book-title { font-size: 2.2rem; }
+        }
+
+        @media (max-width: 640px) {
+            header { width: 95%; padding: 12px 20px; top: 12px; }
+            .btn-amazon { width: 100%; justify-content: center; }
+            .meta-grid { flex-direction: column; width: 100%; }
+            .meta-item { justify-content: center; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="blueprint-canvas"></canvas>
+
+    <header>
+        <a href="index.html" class="brand-logo" aria-label="Sudam Digital Ecosystem">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" style="height: 48px; width: auto; display: block;">
+              <defs>
+                <mask id="usb-holes">
+                  <rect width="100%" height="100%" fill="white" />
+                  <rect x="198" y="76" width="8" height="8" rx="2" fill="black" />
+                  <rect x="214" y="76" width="8" height="8" rx="2" fill="black" />
+                </mask>
+              </defs>
+              <g stroke-width="20" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                <path d="M 140,115 A 35,35 0 0,0 140,185" stroke="currentColor" />
+                <circle cx="210" cy="150" r="35" stroke="var(--accent-main)" />
+                <path d="M 280,115 A 35,35 0 0,1 280,185" stroke="currentColor" />
+                <path d="M 369,115 L 403,115 M 369,150 L 403,150 M 369,185 L 403,185" stroke="currentColor" />
+                <path d="M 464,115 A 20,20 0 0,1 464,155" stroke="currentColor" />
+                <path d="M 464,160 L 489,185" stroke="currentColor" />
+              </g>
+              <rect x="192" y="62" width="36" height="36" rx="4" fill="var(--accent-main)" mask="url(#usb-holes)" />
+            </svg>
+        </a>
+        
+        <a href="index.html" class="nav-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Back to Studio
+        </a>
+    </header>
+
+    <main class="container">
+        
+        <div class="page-header">
+            <h1 class="page-title">Author's Shelf</h1>
+            <p class="page-desc">A curated collection of published literature, strategic blueprints, and technical guides designed to elevate your career.</p>
+        </div>
+
+        <div class="book-module">
+            <div class="book-glow"></div>
+            
+            <div class="book-cover-container">
+                <div class="book-3d">
+                    <img src="https://m.media-amazon.com/images/I/61+8eOHrDAL._SY466_.jpg" alt="AI Freelancer's Blueprint Cover">
+                </div>
+            </div>
+
+            <div class="book-info">
+                <div class="status-badge">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="margin-right: 4px;">
+                        <path d="M12,2L15.09,8.26L22,9.27L17,14.14L18.18,21.02L12,17.77L5.82,21.02L7,14.14L2,9.27L8.91,8.26L12,2Z"></path>
+                    </svg>
+                    Published on Amazon KDP
+                </div>
+                
+                <h2 class="book-title">AI Freelancer's Blueprint</h2>
+                <p class="book-subtitle">The Roadmap to Reinventing Your Freelance Career and Thriving in the Age of AI</p>
+                
+                <div class="meta-grid">
+                    <div class="meta-item" title="Published Date">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                        24 Dec 2025
+                    </div>
+                    <div class="meta-item" title="Page Count">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        110 Pages
+                    </div>
+                    <div class="meta-item" title="Language">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                        English
+                    </div>
+                    <div class="meta-item" title="Edition">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                        1st Edition
+                    </div>
+                </div>
+
+                <a href="https://amzn.in/d/0hp8auHA" target="_blank" rel="noopener noreferrer" class="btn-amazon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19c4 2.5 9 2.5 13 0"></path>
+                        <path d="M16 18l1.5 1.5L20 16"></path>
+                        <path d="M12 4v10"></path>
+                        <path d="M8 8l4-4 4 4"></path>
+                    </svg>
+                    Buy on Amazon
+                </a>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Sudam. Engineered for humans.</p>
+    </footer>
+
+    <script>
+        const canvas = document.getElementById('blueprint-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        const spacing = 45; // Grid spacing
+        let grid = [];
+        let cols, rows;
+        let time = 0;
+        
+        // Mouse topographical radar
+        const mouse = { x: -1000, y: -1000, radius: 250 };
+
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.x;
+            mouse.y = e.y;
+        });
+
+        window.addEventListener('mouseout', () => {
+            mouse.x = -1000;
+            mouse.y = -1000;
+        });
+
+        window.addEventListener('resize', initBlueprint);
+
+        class GridPoint {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.baseX = x;
+                this.baseY = y;
+                // Offset calculation for the 3D perspective scroll effect
+                this.zOffset = Math.random() * Math.PI * 2; 
+                this.elevation = 0; // Elevation from mouse interaction
+            }
+
+            update() {
+                // Slowly pan the grid backwards to look like a moving blueprint
+                this.y += 0.5;
+                if (this.y > height + spacing) {
+                    this.y = -spacing;
+                    this.baseY = this.y;
+                }
+
+                // Calculate interactive elevation based on cursor proximity
+                let dx = this.x - mouse.x;
+                let dy = this.y - mouse.y;
+                let dist = Math.sqrt(dx * dx + dy * dy);
+                
+                if (dist < mouse.radius) {
+                    let force = (mouse.radius - dist) / mouse.radius;
+                    // Smoothly interpolate elevation up
+                    this.elevation += (force * 15 - this.elevation) * 0.1;
+                } else {
+                    // Smoothly interpolate elevation back to 0
+                    this.elevation += (0 - this.elevation) * 0.05;
+                }
+            }
+        }
+
+        function initBlueprint() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            
+            cols = Math.ceil(width / spacing) + 1;
+            rows = Math.ceil(height / spacing) + 2; // Extra rows for seamless wrapping
+            grid = [];
+
+            for (let i = 0; i < cols; i++) {
+                grid[i] = [];
+                for (let j = 0; j < rows; j++) {
+                    grid[i][j] = new GridPoint(i * spacing, (j * spacing) - spacing);
+                }
+            }
+        }
+
+        function drawBlueprint() {
+            ctx.clearRect(0, 0, width, height);
+            
+            // Draw horizontal and vertical connecting lines
+            for (let i = 0; i < cols - 1; i++) {
+                for (let j = 0; j < rows - 1; j++) {
+                    
+                    let p1 = grid[i][j];
+                    let pRight = grid[i + 1][j];
+                    let pDown = grid[i][j + 1];
+
+                    // Draw Horizontal Line
+                    drawLine(p1, pRight);
+                    // Draw Vertical Line
+                    drawLine(p1, pDown);
+                    
+                    // Draw Vertex Dot
+                    drawDot(p1);
+                }
+            }
+            
+            // Update points after drawing
+            for (let i = 0; i < cols; i++) {
+                for (let j = 0; j < rows; j++) {
+                    grid[i][j].update();
+                }
+            }
+        }
+
+        function drawLine(p1, p2) {
+            // Lines glow brighter when elevated by the mouse
+            let avgElevation = (p1.elevation + p2.elevation) / 2;
+            let opacity = 0.1 + (avgElevation * 0.03); // Base 0.1, scales up
+            
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y - p1.elevation);
+            ctx.lineTo(p2.x, p2.y - p2.elevation);
+            ctx.strokeStyle = `rgba(59, 130, 246, ${opacity})`;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        }
+
+        function drawDot(p) {
+            let opacity = 0.15 + (p.elevation * 0.04);
+            let size = 1.5 + (p.elevation * 0.15); // Dots get larger when elevated
+            
+            ctx.beginPath();
+            ctx.arc(p.x, p.y - p.elevation, size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(59, 130, 246, ${opacity})`;
+            ctx.fill();
+        }
+
+        function animateBlueprint() {
+            requestAnimationFrame(animateBlueprint);
+            time += 0.01;
+            drawBlueprint();
+        }
+
+        initBlueprint();
+        animateBlueprint();
+    </script>
+</body>
+
+</html>
