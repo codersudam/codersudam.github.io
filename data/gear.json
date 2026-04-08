@@ -1,0 +1,112 @@
+{
+  "pageTitle": "Programmer's Arsenal",
+  "pageSubtitle": "The high-performance tools, peripherals, and gear every developer must carefully pick to maximize productivity and achieve flow state.",
+  "products": [
+    {
+      "id": "gear-001",
+      "name": "Transparent Wireless Mouse",
+      "category": "Peripherals",
+      "description": "Arctic Fox Pureview Transparent Wireless and Bluetooth Rechargeable Mouse, USB Receiver, LED Battery Magic Silm for Office/PC/Mac/Laptop/Apple/ipad(Space Gray)",
+      "imageUrl": "https://m.media-amazon.com/images/I/613dyv2wXdL._SX522_.jpg",
+      "affiliateLink": "https://amzn.in/d/043HarqB",
+      "specs": [
+        "Network Connectivity Technology : Bluetooth",
+        "Product Features : Rechargeable",
+        "Movement Detection : Optical",
+        "Button Quantity : 2",
+        "Hand Orientation : Ambidextrous",
+        "Compatible Devices : PC, Laptop, MacBook, iPad and so on",
+        "Operating System : Compatible with Windows 8/10/11, Mac OS, iOS 13 and above, android",
+        "Battery Average Life : 30 Days",
+        "Range : 10m",
+        "Number of Batteries : 1 Lithium Ion batteries required. (included)",
+        "Hardware Platform : PC, Laptop, MacBook, iPad and so on",
+        "Power Source : usb",
+        "Mouse Maximum Sensitivity : 2400 Dots per Inch"
+      ],
+      "buttonText": "View on Amazon"
+    },
+    {
+      "id": "gear-002",
+      "name": "Wireless Mini Keyboard",
+      "category": "Peripherals",
+      "description": "FRONTECH Wireless Mini Keyboard - 78 Keys, Bluetooth Connectivity, Rechargeable, Ultra Slim, Compact Design 1 Year Warranty (FT-1603AW)",
+      "imageUrl": "https://m.media-amazon.com/images/I/714rg46PJ9L._SX522_.jpg",
+      "affiliateLink": "https://amzn.in/d/01GhJ3aX",
+      "specs": [
+        "Connectivity Technology : Bluetooth",
+        "Number of Keys : 78",
+        "Product Features : Ultra Slim, Rechargeable",
+        "Warranty : 1 Year",
+        "Design : Compact Layout"
+      ],
+      "buttonText": "View on Amazon"
+    },
+    {
+      "id": "gear-003",
+      "name": "Curved Gaming LED Monitor",
+      "category": "Peripherals",
+      "description": "FRONTECH 27-Inch (68.58 cm) Curved Gaming LED Monitor | Full HD 1080p | 120Hz Refresh Rate | RGB Lights | HDMI & VGA Dual Input | Wall Mountable | 3 Years Warranty (MON-0053A)",
+      "imageUrl": "https://m.media-amazon.com/images/I/81M+x3Za94L._SX679_.jpg",
+      "affiliateLink": "https://amzn.in/d/06W9iIIr",
+      "specs": [
+        "Screen Size : 27-Inch (68.58 cm)",
+        "Display Type : Curved LED",
+        "Resolution : Full HD 1080p",
+        "Refresh Rate : 120Hz",
+        "Special Features : RGB Lights, Wall Mountable",
+        "Connectivity Inputs : HDMI & VGA Dual Input",
+        "Warranty : 3 Years"
+      ],
+      "buttonText": "View on Amazon"
+    },
+    {
+      "id": "gear-004",
+      "name": "Desk Mat",
+      "category": "Accessories",
+      "description": "MYPCWALA- Solo Leveling Jinwoo Desk Mat for Office & Gaming – 11x23 inch, Waterproof, Anti-Slip Rubber Base, Scratch Resistant, Multi-Color Design for Students & Professionals",
+      "imageUrl": "https://m.media-amazon.com/images/I/71aqaWVkHxL._SX522_.jpg",
+      "affiliateLink": "https://amzn.in/d/0i4oyNCO",
+      "specs": [
+        "Dimensions : 11x23 inch",
+        "Material : Anti-Slip Rubber Base",
+        "Special Features : Waterproof, Scratch Resistant",
+        "Design : Solo Leveling Jinwoo Multi-Color"
+      ],
+      "buttonText": "View on Amazon"
+    },
+    {
+      "id": "gear-005",
+      "name": "Office Chair",
+      "category": "Accessories",
+      "description": "Kepler Brooks Zeus Pro Office Chair for Work | 3-Year Warranty | Ergonomic Office Chair, Study Chair, 2D Adjustable Headrest, Lumbar & Arms, Legrest, Multi Lock Recliner, Heavy Duty Metal Base (Black)",
+      "imageUrl": "https://m.media-amazon.com/images/I/61ccYqIug8L._SX679_.jpg",
+      "affiliateLink": "https://amzn.in/d/08s6zSqA",
+      "specs": [
+        "Product Type : Ergonomic Office Chair",
+        "Adjustability : 2D Adjustable Headrest, Lumbar & Arms",
+        "Special Features : Multi Lock Recliner, Integrated Legrest",
+        "Base Material : Heavy Duty Metal Base",
+        "Color : Black",
+        "Warranty : 3-Year"
+      ],
+      "buttonText": "View on Amazon"
+    },
+    {
+      "id": "gear-006",
+      "name": "UPS Power Backup",
+      "category": "Peripherals",
+      "description": "Cuzor Mini UPS 12V Router UPS up to 2A | Up to 5 Hours Backup | WiFi UPS Power Backup During powercuts | 2x2900 mAh | Mini ups for Router",
+      "imageUrl": "https://m.media-amazon.com/images/I/6157sg8RLBL._SX522_.jpg",
+      "affiliateLink": "https://amzn.in/d/09hfqa5k",
+      "specs": [
+        "Output Voltage : 12V",
+        "Output Current : up to 2A",
+        "Battery Capacity : 2x2900 mAh",
+        "Backup Time : Up to 5 Hours",
+        "Compatible Devices : WiFi Routers"
+      ],
+      "buttonText": "View on Amazon"
+    }
+  ]
+}
