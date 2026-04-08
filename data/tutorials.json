@@ -128,28 +128,12 @@
     "tags": ["Magnetic", "Hover"]
   },
   {
-    "id": "js-modules-firebase-chat",
-    "title": "JS Modules | Firebase chat app using HTML",
-    "description": "Create a fully functional Firebase chat application leveraging JavaScript modules.",
-    "youtubeVideoId": "xPUfMxpu2Gg",
-    "thumbnailUrl": "https://i.ytimg.com/vi/xPUfMxpu2Gg/maxresdefault.jpg",
-    "tags": ["Firebase", "Chat App"]
-  },
-  {
     "id": "load-local-html-webview",
     "title": "1.1 Load local html file in webview",
     "description": "Step-by-step tutorial on loading a local HTML file directly into a WebView.",
     "youtubeVideoId": "54o9u3BzEtw",
     "thumbnailUrl": "https://i.ytimg.com/vi/54o9u3BzEtw/maxresdefault.jpg",
     "tags": ["WebView", "HTML"]
-  },
-  {
-    "id": "resizable-div-html",
-    "title": "Pure JS | Resizable div using html",
-    "description": "Learn to code a custom resizable UI div using purely HTML and Vanilla JS.",
-    "youtubeVideoId": "We-Og5peS3Y",
-    "thumbnailUrl": "https://i.ytimg.com/vi/We-Og5peS3Y/maxresdefault.jpg",
-    "tags": ["Resizable", "Vanilla JS"]
   },
   {
     "id": "make-web-app-android",
@@ -182,14 +166,6 @@
     "youtubeVideoId": "bAZizf0411U",
     "thumbnailUrl": "https://i.ytimg.com/vi/bAZizf0411U/maxresdefault.jpg",
     "tags": ["Collision", "Physics"]
-  },
-  {
-    "id": "drag-drop-touch-events",
-    "title": "Pure JS | Drag and drop using touch events in html",
-    "description": "Make your drag and drop systems completely mobile-friendly with touch event listeners.",
-    "youtubeVideoId": "GU3lQTbwUZc",
-    "thumbnailUrl": "https://i.ytimg.com/vi/GU3lQTbwUZc/maxresdefault.jpg",
-    "tags": ["Drag Drop", "Touch"]
   },
   {
     "id": "detect-device-orientation",
