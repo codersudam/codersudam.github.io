@@ -4,25 +4,21 @@
   "products": [
     {
       "id": "gear-001",
-      "name": "Transparent Wireless Mouse",
+      "name": "Lightspeed Wireless Gaming Mouse",
       "category": "Peripherals",
-      "description": "Arctic Fox Pureview Transparent Wireless and Bluetooth Rechargeable Mouse, USB Receiver, LED Battery Magic Silm for Office/PC/Mac/Laptop/Apple/ipad(Space Gray)",
-      "imageUrl": "https://m.media-amazon.com/images/I/613dyv2wXdL._SX522_.jpg",
-      "affiliateLink": "https://amzn.in/d/043HarqB",
+      "description": "The ultra-lightweight Logitech SUPERSTRIKE delivers lightning-fast wireless precision for absolute competitive dominance.",
+      "imageUrl": "https://m.media-amazon.com/images/I/51+51Ur4jzL._SL1500_.jpg",
+      "affiliateLink": "https://amzn.to/3QcCP8C",
       "specs": [
-        "Network Connectivity Technology : Bluetooth",
-        "Product Features : Rechargeable",
         "Movement Detection : Optical",
-        "Button Quantity : 2",
-        "Hand Orientation : Ambidextrous",
-        "Compatible Devices : PC, Laptop, MacBook, iPad and so on",
-        "Operating System : Compatible with Windows 8/10/11, Mac OS, iOS 13 and above, android",
-        "Battery Average Life : 30 Days",
-        "Range : 10m",
-        "Number of Batteries : 1 Lithium Ion batteries required. (included)",
-        "Hardware Platform : PC, Laptop, MacBook, iPad and so on",
-        "Power Source : usb",
-        "Mouse Maximum Sensitivity : 2400 Dots per Inch"
+        "Button Quantity : 5",
+        "Hand Orientation : Right",
+        "Battery Average Life : 90 Hours",
+        "Mouse Maximum Sensitivity : 40000 Dots per Inch",
+        "Antenna Location : Gaming",
+        "Item Weight Unit of Measure : 61 Grams",
+        "Item Dimensions L x W : 12.5L x 6.3W Centimeters",
+        "Warranty Description : 2-Years Limited Hardware Warranty"
       ],
       "buttonText": "View on Amazon"
     },
