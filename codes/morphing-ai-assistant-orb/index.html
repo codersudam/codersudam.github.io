@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Morphing AI Assistant Orb</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700&display=swap');
+
+    /* Pristine Light Theme & Centered Layout */
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-color: #f8fafc;
+      background-image: radial-gradient(circle at 50% 50%, #ffffff 0%, #e2e8f0 100%);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow: hidden;
+      padding: 24px;
+      box-sizing: border-box;
+    }
+
+    /* Container for the Orb and UI */
+    .ai-container {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+      aspect-ratio: 3 / 4;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* The interactive canvas where the math happens */
+    #orbCanvas {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 400px;
+      height: 400px;
+      z-index: 1;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+
+    /* Glassmorphic Control Panel */
+    .glass-panel {
+      position: absolute;
+      bottom: 20px;
+      width: 85%;
+      padding: 24px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      box-shadow: 
+        0 20px 40px rgba(15, 23, 42, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .status-text {
+      color: #0f172a;
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin: 0 0 8px 0;
+      letter-spacing: -0.5px;
+      transition: color 0.3s ease;
+    }
+
+    .sub-text {
+      color: #64748b;
+      font-size: 0.95rem;
+      margin: 0 0 20px 0;
+      transition: opacity 0.3s ease;
+    }
+
+    /* Interactive Mic Button */
+    .mic-btn {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ffffff, #f1f5f9);
+      border: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: 0 10px 20px rgba(15, 23, 42, 0.05);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .mic-btn svg {
+      width: 24px;
+      height: 24px;
+      fill: none;
+      stroke: #6366f1; /* Indigo */
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: stroke 0.3s ease;
+    }
+
+    .mic-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 15px 30px rgba(99, 102, 241, 0.15);
+      border-color: #c7d2fe;
+    }
+
+    /* Active State Styling */
+    .ai-container.active .mic-btn {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border-color: #8b5cf6;
+      box-shadow: 0 15px 30px rgba(139, 92, 246, 0.3);
+      animation: pulse 2s infinite;
+    }
+
+    .ai-container.active .mic-btn svg {
+      stroke: #ffffff;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4); }
+      70% { box-shadow: 0 0 0 20px rgba(139, 92, 246, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="ai-container" id="container">
+    <canvas id="orbCanvas"></canvas>
+    
+    <div class="glass-panel">
+      <h2 class="status-text" id="status">Standby</h2>
+      <p class="sub-text" id="sub">Tap the orb or mic to wake</p>
+      
+      <div class="mic-btn" id="micBtn">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+          <line x1="12" y1="19" x2="12" y2="23"></line>
+          <line x1="8" y1="23" x2="16" y2="23"></line>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('orbCanvas');
+    const ctx = canvas.getContext('2d');
+    const container = document.getElementById('container');
+    const micBtn = document.getElementById('micBtn');
+    const statusText = document.getElementById('status');
+    const subText = document.getElementById('sub');
+
+    // Canvas size
+    const size = 400;
+    canvas.width = size;
+    canvas.height = size;
+
+    // State
+    let isActive = false;
+    let time = 0;
+    let targetIntensity = 0.5; // Base shape morphing intensity
+    let currentIntensity = 0.5;
+    let targetRotationSpeed = 0.005;
+    let currentRotationSpeed = 0.005;
+
+    // We will draw 3 overlapping fluid blobs
+    const blobs = [
+      { color: 'rgba(56, 189, 248, 0.6)', offset: 0, speed: 1.2 },  // Sky Blue
+      { color: 'rgba(168, 85, 247, 0.5)', offset: 2, speed: 0.8 },  // Violet
+      { color: 'rgba(14, 165, 233, 0.4)', offset: 4, speed: 1.5 }   // Cerulean
+    ];
+
+    function drawBlob(radius, color, angleOffset, speedModifier) {
+      ctx.beginPath();
+      
+      const segments = 150; // Resolution of the circle
+      for (let i = 0; i <= segments; i++) {
+        const angle = (i / segments) * Math.PI * 2;
+        
+        // Complex Trigonometry for fluid morphing (combining Sine waves)
+        // We use the current angle, time, and specific speed modifiers to create noise
+        const noise = 
+          Math.sin(angle * 3 + time * speedModifier + angleOffset) * 15 * currentIntensity +
+          Math.cos(angle * 5 - time * (speedModifier * 0.8)) * 10 * currentIntensity +
+          Math.sin(angle * 2 + time) * 5 * currentIntensity;
+
+        const r = radius + noise;
+        
+        // Convert Polar coordinates (radius, angle) to Cartesian (x, y)
+        const x = size / 2 + Math.cos(angle) * r;
+        const y = size / 2 + Math.sin(angle) * r;
+
+        if (i === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      }
+      
+      ctx.closePath();
+      ctx.fillStyle = color;
+      
+      // Use multiply blend mode for the light theme to create deep, iridescent overlaps
+      ctx.globalCompositeOperation = 'multiply'; 
+      ctx.fill();
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, size, size);
+      
+      // Smoothly interpolate current physics towards target physics
+      currentIntensity += (targetIntensity - currentIntensity) * 0.05;
+      currentRotationSpeed += (targetRotationSpeed - currentRotationSpeed) * 0.05;
+      
+      time += currentRotationSpeed;
+
+      // Draw each blob
+      blobs.forEach(blob => {
+        // Base radius grows slightly when active
+        const baseRadius = isActive ? 100 : 85; 
+        drawBlob(baseRadius, blob.color, blob.offset, blob.speed);
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    // Interaction Logic
+    function toggleActive() {
+      isActive = !isActive;
+      
+      if (isActive) {
+        container.classList.add('active');
+        statusText.innerText = "Listening...";
+        subText.style.opacity = "0";
+        // Crank up the math variables to make it "agitated"
+        targetIntensity = 2.5; 
+        targetRotationSpeed = 0.02;
+      } else {
+        container.classList.remove('active');
+        statusText.innerText = "Standby";
+        subText.style.opacity = "1";
+        // Calm it back down
+        targetIntensity = 0.5;
+        targetRotationSpeed = 0.005;
+      }
+    }
+
+    // Hover effects on the canvas itself
+    canvas.addEventListener('mousemove', () => {
+      if (!isActive) targetIntensity = 1.0; // Slightly wake up on hover
+    });
+    
+    canvas.addEventListener('mouseleave', () => {
+      if (!isActive) targetIntensity = 0.5; // Sleep on leave
+    });
+
+    canvas.addEventListener('click', toggleActive);
+    micBtn.addEventListener('click', toggleActive);
+
+    // Start loop
+    animate();
+  </script>
+
+</body>
+</html>
