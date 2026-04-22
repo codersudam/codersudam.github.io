@@ -1,5 +1,13 @@
 [
   {
+  "id": "elastic-slider",
+  "title": "Elastic Pricing Slider 💸 | Organic Spring Physics & Tactile UX",
+  "description": "Learn how to build a highly tactile, neumorphic pricing slider that uses JavaScript spring physics and SVG to create an organic, elastic user experience.",
+  "youtubeVideoId": "8H6JruWznEE",
+  "thumbnailUrl": "https://i.ytimg.com/vi/8H6JruWznEE/maxresdefault.jpg",
+  "tags": ["MicroInteractions","SpringPhysics","UIUX"]
+  },
+  {
   "id": "morphing-ai-assistant-orb",
   "title": "Advanced Morphing AI Orb 🤖 | Canvas Trigonometry & Light Theme UI",
   "description": "A dynamic, light-themed AI assistant orb that uses HTML5 Canvas and complex trigonometry to create a fluid, interactive morphing animation that reacts to user input.",
